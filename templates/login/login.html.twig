@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>
+    {% block title %}{{ title }}{% endblock %}
+  </title>
+
+  {% for style in css %}
+  <link rel="stylesheet" type="text/css" href="{{ style }}" />
+  {% endfor %}
+  {% for js in javascript %}
+  <script type="text/javascript" src="{{ js }}"></script>
+  {% endfor %}
+
+  <link rel="stylesheet" type="text/css" href="css/for_all.css" />
+  
+</head>
+
+<body class="w-100 h-100" id="login">
+  <div class="overlap overlap-login"></div>
+  <div class="login">
+    <div class="login-body">
+    
+    <!--<h6 id="main_heading">{{ heading }}</h6>-->
+
+    <div class="login-logo"></div>
+
+    <form action="login.php" method="POST" class="login-form">
+      <table>
+        <tr>
+          <td>
+            <label for="name" title="Login:">{{ user_name }}</label>
+          </td>
+          <td><input class="form-control" id="name" name="login" type="text" value="" /></td>
+        </tr>
+        <tr>
+          <td>
+            <label for="pass" title="Password:">{{ password }}</label>
+          </td>
+          <td><input class="form-control" id="pass" name="pass" type="password" value="" />
+            <input name="act" type="hidden" value="login" /></td>
+        </tr>
+      </table>
+      <td>
+        <button class="btn btn-primary my-4 btn-login" type="submit" value="enter">{{ enter|upper }}</button>
+      </td>
+      {% if fail %}
+      <td>
+        <p class="danger">{{ wrong_login }}</p>
+      </td>
+      {% endif %}
+    </form>
+  </div>
+  </div>
+</body>
+
+</html>
+<!--Created for the GSA in 2020-2021. Project management: SpaceTec Partners, software development: www.foxcom.eu-->
