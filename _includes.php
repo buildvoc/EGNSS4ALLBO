@@ -10,6 +10,7 @@ ifdefine('SERVER', 'localhost'); //default server
 
 define('APP_VERSION', '1.0.0.');
 
+
 switch (SERVER) {
   case 'UAT':
     define('SYSTEM_HOST', 'https://mybohostname');

@@ -1,3 +1,3 @@
 <?php
-define('SERVER', 'LOCALHOST');
+define('SERVER', 'UAT');
 ?>

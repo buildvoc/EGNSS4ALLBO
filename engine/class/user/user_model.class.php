@@ -111,6 +111,8 @@ class user_model{
   }
 
   public static function add_new_user($agency_id, $login, $paswd, $name, $surname, $ident_num, $email, $vat, $role){
+
+
     try{
       dibi::begin();
       $user_sql_args = array(
@@ -124,13 +126,14 @@ class user_model{
         'vat%s'=>$vat,
         'timestamp%sql'=>'CURRENT_TIMESTAMP()'
       );
-      dibi::insert('USER', $user_sql_args)->execute();
+      
+      dibi::insert('user', $user_sql_args)->execute();
       $user_role_sql_args = array(
         'user_id%i'=> dibi::getInsertId(),
         'role_id%i'=> $role,
         'timestamp%sql'=> 'CURRENT_TIMESTAMP()'
       );
-      dibi::insert('USER_ROLE', $user_role_sql_args)->execute();
+      dibi::insert('user_role', $user_role_sql_args)->execute();
       dibi::commit();
     }catch(\Exception $ex){
       dibi::rollback();

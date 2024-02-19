@@ -1,5 +1,8 @@
 <?php
 
+ini_set('display_errors', '1');
+error_reporting(E_ALL);
+
 use index\index_action_router;
 use index\index_model;
 use index\index_view;
