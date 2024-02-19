@@ -30,7 +30,7 @@ class twig_controler{
     $fields['css'] = $this->getCss();
     $fields['app_version'] = APP_VERSION;
     $fields['user_name'] = isset($_SESSION['user_name'])? $_SESSION['user_name'] : "";
-    $fields['map_api_key'] = 'AIzaSyBRQTPTFC1LaXRNYp_3YrfyEIXNMMHvJCs';
+    $fields['map_api_key'] = '<<Google API>>';
     $fields['lang'] = $_SESSION['lang'];
     if($page_id){
       $fields = array_merge($fields, $this->load_lang($lang, $page_id));
