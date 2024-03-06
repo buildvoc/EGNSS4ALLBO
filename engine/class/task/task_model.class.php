@@ -307,7 +307,7 @@ class task_model{
 
   public static function get_task_types(){
     return dibi::select('id, name')
-    ->from('task_type')->fetchAll();
+    ->from('task_type')->where('active = 1')->fetchAll();
   }
 
   public static function photos_verified_status($task_id){
