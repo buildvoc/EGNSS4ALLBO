@@ -31,6 +31,14 @@ $(document)
         }
     });
   })
+.on('click', '.js_button_user_deactivate_of', async function(){
+    $id = $(this).data('userid');
+    await get_translate('officer_deactivate_confirm');
+    if (confirm(alert_text)){
+      deactivate_user($id);
+    }
+  })
+  
 
 function load_table(){
   $.ajax({
@@ -53,4 +61,22 @@ function load_table(){
     }
   })
 }
+function deactivate_user($id){
+  $.ajax({
+    type: "post",
+    url: "index.php",
+    data: {
+      act: 'deactivate_user',
+      id: $id
+    },
+  }).done(function(result){
+    data = JSON.parse(result);
+    if (data.error=='1'){
+      alert(data.errorText);
+    } else {
+      location.reload();
+    }
+  })
+}
+
 //Created for the GSA in 2020-2021. Project management: SpaceTec Partners, software development: www.foxcom.eu

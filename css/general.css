@@ -114,6 +114,7 @@ input, .input {font-size: 16px;}
 /* green */ .task_status.datachecked_1, .btn_status.btn-success {background: linear-gradient(194.5deg, #C0EB5A 20.85%, #52B741 85.54%); border: none; border-radius: 3px;}
 /* red */ .task_status.datachecked_2, .btn_status.btn-danger {background: linear-gradient(194.5deg, #ff7777 20.85%, #ff0202 85.54%); border: none; border-radius: 3px;}
 /* purple */ .task_status.returned {background: linear-gradient(194.5deg, #ef00ff 20.85%, #b308be 85.54%); border: none; border-radius: 3px;}
+.js_new_task_type_inputs{display: none; padding: 20px;}
 .js_new_farmer_inputs{display: none; padding: 20px;}
 .js_new_agency_inputs{display: none; padding: 20px;}
 .clickable:hover {background-color: rgb(110 110 110 / 20%);}

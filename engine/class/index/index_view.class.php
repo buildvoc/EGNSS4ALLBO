@@ -90,10 +90,26 @@ class index_view{
     $this->getTwig()->setPage_id(self::PA_OFFICERS_PAGE_ID);
     return $twig->render($this->getTEMPLATES_PATH() . 'index_pa_officers.html.twig', $twig_array, true, $_SESSION['lang'], self::PA_OFFICERS_PAGE_ID);
   }
+  
 
   public function load_table_of_pa_officers(array $twig_array){
     $twig = $this->getTwig()->setPage_id(self::PA_OFFICERS_PAGE_ID);
     return $twig->render($this->getTEMPLATES_PATH() . 'index_pa_officers_table.html.twig', $twig_array, false, $_SESSION['lang'], (self::PA_OFFICERS_PAGE_ID));
+  }
+  
+  public function load_index_task_type_html_page(array $twig_array){
+    $twig = $this->getTwig();
+    $twig->use_jquery();
+    $twig->pushJavascript($this->getJS_PATH() . 'index.js');
+    $twig->pushJavascript($this->getJS_PATH() . 'index_task_type.js');
+    //$twig->use_map_js();
+    $this->getTwig()->setPage_id(self::PA_OFFICERS_PAGE_ID);
+    return $twig->render($this->getTEMPLATES_PATH() . 'index_task_type.html.twig', $twig_array, true, $_SESSION['lang'], self::PA_OFFICERS_PAGE_ID);
+  }
+  
+  public function load_table_of_task_types(array $twig_array){
+    $twig = $this->getTwig()->setPage_id(self::PA_OFFICERS_PAGE_ID);
+    return $twig->render($this->getTEMPLATES_PATH() . 'index_task_types_table.html.twig', $twig_array, false, $_SESSION['lang'], (self::PA_OFFICERS_PAGE_ID));
   }
 
   public function load_table_of_agency(array $twig_array){
@@ -109,6 +125,15 @@ class index_view{
   public function load_table_of_tasks(array $twig_array){
     $twig = $this->getTwig();
     return $twig->render($this->getTEMPLATES_PATH() . 'index_farmers_tasks_table.html.twig', $twig_array, false, $_SESSION['lang'], self::TASKS_PAGE_ID);
+  }
+  
+    public function load_index_change_password_html_page(array $twig_array){
+    $twig = $this->getTwig();
+    $twig->use_jquery();
+    $twig->pushJavascript($this->getJS_PATH() . 'index.js');
+    $twig->pushJavascript($this->getJS_PATH() . 'index_change_password.js');
+    $this->getTwig()->setPage_id(self::PA_OFFICERS_PAGE_ID);
+    return $twig->render($this->getTEMPLATES_PATH() . 'index_change_password.html.twig', $twig_array, true, $_SESSION['lang'], self::PA_OFFICERS_PAGE_ID);
   }
 
   public function getTwig(): \twig_controler{

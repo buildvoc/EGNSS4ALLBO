@@ -1,0 +1,10 @@
+{% for task_type in list_of_task_types %}
+<tr class="clickable" id="{{task_type.id}}">
+  <td data-label="{{officer_name_text}}">{{ task_type.name }}</td>
+  <td data-label="{{officer_actions_text}}">
+    <button type="button" class="js_button_open_task_type_edit btn btn-primary" data-userid="{{ task_type.id }}" data-userdescription="{{ task_type.description }}" data-username="{{ task_type.name }}" data-formheader="Edit Purpose" >{{ edit_user|upper }}</button>
+    <button type="button" class="js_button_user_deactivate btn btn-warning ml-2" data-userid="{{ task_type.id }}">{{ deactivate_user|upper }}</button>
+  </td>
+</tr>
+{% endfor %}
+<!--Created for the GSA in 2020-2021. Project management: SpaceTec Partners, software development: www.foxcom.eu-->

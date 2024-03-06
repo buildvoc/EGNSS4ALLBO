@@ -26,6 +26,7 @@ class index_model {
     if(!empty($search)){
       $users_sql->where('name LIKE %~like~ OR surname LIKE %~like~ OR identification_number LIKE %like~', $search, $search, $search);
     }
+    $users_sql->where('u.active = 1');
       $users_sql->orderBy($sort);
       $users = $users_sql->fetchAll();
 
@@ -133,6 +134,36 @@ class index_model {
     $agency_sql->orderBy('id');
     return $agency_sql->fetchSingle();
   }
+  
+   public function get_task_types(){
+    $task_type_sql = dibi::select('id,name,description')
+    ->from('task_type')
+    ->where('active = 1');
+    $task_type_sql->orderBy('id');
+    return $task_type_sql->fetchAll();
+  }
+public function new_task_type($name, $description = ''){
+    user_model::add_new_task_type($name, $description);
+}
+  public function edit_task_type($uid, $name, $description = ''){
+    user_model::edit_task_type($uid, $name, $description);
+  }
+  
+    public function deactivate_tast_type($oid){
+    $ret=array('error' => '0', 'errorText' => '');
+    $fields_update_array = array(
+      'active%i' => 0
+    );
+      try{
+        dibi::begin();
+        dibi::update('task_type', $fields_update_array)->where('id = %i', $oid)->execute();
+        dibi::commit();
+      }catch(Exception $ex){
+        dibi::rollback();
+      }
+    
+    return $ret;
+  }
 
   public function load_pa_officer_list($id){
     $agency_sql = dibi::select('u.id, u.login, u.name, u.surname, u.identification_number, u.vat, u.email')
@@ -178,6 +209,25 @@ class index_model {
       'active%i' => 0
     );
     if (user_model::SUPERADMIN_ROLE !== $this->getUser_role()){
+      $ret = array('error' => '1', 'errorText' => user_model::get_translate_from_db('officer_deactivate_error'));
+    } else {
+      try{
+        dibi::begin();
+        dibi::update('user', $fields_update_array)->where('id = %i', $oid)->execute();
+        dibi::commit();
+      }catch(Exception $ex){
+        dibi::rollback();
+      }
+    }
+    return $ret;
+  }
+  
+    public function deactivate_user($oid){
+    $ret=array('error' => '0', 'errorText' => '');
+    $fields_update_array = array(
+      'active%i' => 0
+    );
+    if (user_model::OFFICER_ROLE !== $this->getUser_role()){
       $ret = array('error' => '1', 'errorText' => user_model::get_translate_from_db('officer_deactivate_error'));
     } else {
       try{
@@ -290,6 +340,32 @@ class index_model {
   public static function get_data_from_db($fields){
     return dibi::select($fields['db_col'].' as data')->from($fields['db_table'])->where('id = %i', $fields['db_id'])->fetchSingle();
   }
+  
+  
+    public function change_password($uid, $new_password, $new_password_confirm){
+    $ret=array('error' => '0', 'errorText' => '');
+    $fields_update_array = array(
+      'pswd%s' => sha1($new_password)
+    );
+    if ($new_password == '') {
+        $ret = array('error' => '1', 'errorText' => 'The password field is empty!');
+    } else if ($new_password_confirm == '') {
+        $ret = array('error' => '1', 'errorText' => 'The confirm password field is empty!');
+    }
+    else if ($new_password !== $new_password_confirm){
+      $ret = array('error' => '1', 'errorText' => 'Passwords do NOT match!');
+    } else {
+      try{
+        dibi::begin();
+        dibi::update('user', $fields_update_array)->where('id = %i', $uid)->execute();
+        dibi::commit();
+      }catch(Exception $ex){
+        dibi::rollback();
+      }
+    }
+    return $ret;
+  }
+  
 }
 //Created for the GSA in 2020-2021. Project management: SpaceTec Partners, software development: www.foxcom.eu
 ?>

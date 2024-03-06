@@ -280,7 +280,7 @@ class task_model{
     return dibi::select('template_param, %sql', $_SESSION['lang'])->from('page_lang')->where('page_id = %i', index_view::TASKS_PAGE_ID)->where('template_param = "ack" OR template_param = "decline" OR template_param = "returned" OR template_param = "wait"')->fetchPairs();
   }
 
-  public function assign_photos($user_id, $photos, $task_id){
+  public static function assign_photos($user_id, $photos, $task_id){
     $task_status = dibi::select('status')->from('task')->where('id = %i', $task_id)->fetchSingle();
     $fields_update_task_array = array();
     if (strtolower($task_status) == strtolower(self::STATUS[0])){

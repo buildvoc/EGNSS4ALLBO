@@ -37,9 +37,17 @@
           <li class="nav-item active">
             <a class="nav-link" href="index.php?act=load_release_notes">{{ release_notes }}</a>
           </li>
+          
+          {% if user_role_id == '3' %}
+            <li class="nav-item active">
+              <a class="nav-link" href="index.php?act=task_type_list">Task Purpose</a>
+            </li>
+          {% endif %}
         </ul>
         <div class="navbar_right">
           <ul class="navbar-nav mr-auto">
+            <li class="nav-item"><a id="change_password" class="nav-link active js_change_password" href="index.php?act=load_change_password">Change Password</a></li>
+            <li class="nav-item separator"> <span class="nav-link"> | </span></li>
             <li class="nav-item"><a id="cz" class="nav-link {% if lang == 'cz' %} active {% endif %} js_lang" href="#">CZ</a></li>
             <li class="nav-item"><a id="en" class="nav-link {% if lang == 'en' %} active {% endif %} js_lang" href="#">EN</a></li>
             <li class="nav-item"><a id="it" class="nav-link {% if lang == 'it' %} active {% endif %} js_lang" href="#">IT</a></li>

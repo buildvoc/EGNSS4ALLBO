@@ -139,6 +139,36 @@ class user_model{
       dibi::rollback();
     }
   }
+  
+  public static function add_new_task_type($name, $description =''){
+
+    try{
+      dibi::begin();
+      $user_sql_args = array(
+        'name%s'=>$name,
+        'description%s'=>$description
+      );
+      
+      dibi::insert('task_type', $user_sql_args)->execute();
+      dibi::commit();
+    }catch(\Exception $ex){
+      dibi::rollback();
+    }
+  }
+  
+    public static function edit_task_type($id, $name, $description =''){
+    try{
+      dibi::begin();
+      $user_update_array = array(
+        'name%s'=>$name,
+        'description%s'=>$description
+      );
+      dibi::update('task_type', $user_update_array)->where('id = %i', $id)->execute();
+      dibi::commit();
+    }catch(\Exception $ex){
+      dibi::rollback();
+    }
+  }
 
   public static function edit_user($agency_id, $id, $paswd, $name, $surname, $ident_num, $email, $vat, $role){
     try{

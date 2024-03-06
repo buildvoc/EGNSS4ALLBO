@@ -9,7 +9,10 @@
     <td class="js_farmer_tasks" data-label="{{unassigned_photos_count_text}}" data-href="{{ user.id }}">{{ user.unassigned_photos_count }}</td>
     <td class="js_farmer_tasks" data-label="{{tasks_provided_count_text}}" data-href="{{ user.id }}">{{ user.tasks_provided_count }}</td>
     {% if agency %}
-      <td data-label="{{action}}"><button type="button" class="js_button_open_user_edit btn btn-outline-secondary" data-userid="{{ user.id }}" data-userlogin="{{ user.login }}" data-username="{{ user.name }}" data-usersurname="{{ user.surname }}" data-useremail="{{ user.email }}" data-uservat="{{ user.vat }}" data-userin="{{ user.identification_number }}" data-formheader="{{ edit_farmer_header }}">{{ edit_user|upper }}</button></td>
+      <td data-label="{{action}}">
+          <button type="button" class="js_button_open_user_edit btn btn-outline-secondary" data-userid="{{ user.id }}" data-userlogin="{{ user.login }}" data-username="{{ user.name }}" data-usersurname="{{ user.surname }}" data-useremail="{{ user.email }}" data-uservat="{{ user.vat }}" data-userin="{{ user.identification_number }}" data-formheader="{{ edit_farmer_header }}">{{ edit_user|upper }}</button>
+          <button type="button" class="js_button_user_deactivate_of btn btn-warning ml-2" data-userid="{{ user.id }}">DEACTIVATE</button>
+      </td>
     {% endif %}
   </tr>
 {% endfor %}

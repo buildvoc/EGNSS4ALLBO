@@ -29,7 +29,15 @@ class index_action_router extends \action_router{
     'get_user_paths_gps_points',
     'delete_path',
     'new_agency',
-    'load_release_notes'
+    'load_release_notes',
+    'task_type_list',
+    'load_task_type_table',
+    'new_task_type',
+    'edit_task_type',
+    'deactivate_tast_type',
+    'deactivate_user',
+    'load_change_password',
+    'change_password'
   );
 
   public function __construct(){
@@ -64,6 +72,7 @@ class index_action_router extends \action_router{
   }
 
   protected function gallery_unassigned($params){
+      
     if(isset($params['id'])){
       $template = new index_view();
       if(isset($params['task_select']) && $params['task_select']=='true'){
@@ -73,7 +82,7 @@ class index_action_router extends \action_router{
           "agency"=>user_model::is_agency(),
           "task_select"=>true,
           "photos"=>$gallery,
-          "photo_ids"=>implode($params['photos'],','),
+          "photo_ids"=>implode(',',$params['photos']),
           "tasks"=>$tasks,
           "user_id"=>$params['id'],
           "ret_url" => "index.php?act=agency_user_tasks_list&id=".$params['id']."#".$params['id']
@@ -358,6 +367,12 @@ class index_action_router extends \action_router{
     echo json_encode($model->deactivate_officer($params['id']));
     exit;
   }
+  
+protected function deactivate_user($params){
+    $model = new index_model(user_model::OFFICER_ROLE);
+    echo json_encode($model->deactivate_user($params['id']));
+    exit;
+  }
 
   protected function get_data_from_db($params){
     $db_fields = array();
@@ -383,6 +398,78 @@ class index_action_router extends \action_router{
     echo json_encode(user_model::delete_user_path($params['id'], $params['reload']));
     exit;
   }
+  
+  
+  
+  protected function task_type_list($params = array()) {
+        $model = new index_model(user_model::SUPERADMIN_ROLE);
+        //$list_task_type = $model->get_task_types();
+
+        $template = new index_view();
+        $template_variables = array(
+            "pa_name" => 'Task Type',
+            "agency" => false,
+            "superadmin" => true
+        );
+
+        echo $template->load_index_task_type_html_page($template_variables);
+        exit;
+    }
+    
+    
+protected function load_task_type_table($params = array()){
+    $model = new index_model(user_model::SUPERADMIN_ROLE);
+    $list_task_type = $model->get_task_types();
+
+    $template = new index_view();
+    $template_variables = array(
+      "list_of_task_types"=>$list_task_type,
+      "agency"=> false,
+      "superadmin" => true
+    );
+
+    echo $template->load_table_of_task_types($template_variables);
+    exit;
+  }
+  
+    protected function new_task_type($params){
+    $model = new index_model(user_model::OFFICER_ROLE);
+    if(!isset($params['role'])){ $params['role'] = 1; }
+    $model->new_task_type($params['name'], $params['description']);
+    header("Location: ".$_SERVER['HTTP_REFERER']);
+    exit;
+  }
+  
+protected function edit_task_type($params){
+    $model = new index_model(user_model::OFFICER_ROLE);
+    $model->edit_task_type($params['user_id'], $params['name'], $params['description']);
+    header("Location: ".$_SERVER['HTTP_REFERER']);
+    exit;
+  }
+    protected function deactivate_tast_type($params){
+    $model = new index_model(user_model::SUPERADMIN_ROLE);
+    echo json_encode($model->deactivate_tast_type($params['id']));
+    exit;
+  }
+  
+    protected function load_change_password($params = array()) {
+        $template = new index_view();
+        $template_variables = array(
+            "agency" => true,
+            "superadmin" => true,
+            "user_id" => user_model::get_loged_user_id()
+        );
+        
+        echo $template->load_index_change_password_html_page($template_variables);
+        exit;
+    }
+    
+protected function change_password($params){
+    $model = new index_model(user_model::OFFICER_ROLE);
+    echo json_encode($model->change_password($params['id'], $params['new_password'], $params['new_password_confirm']));
+    exit;
+  }
+    
 }
 //Created for the GSA in 2020-2021. Project management: SpaceTec Partners, software development: www.foxcom.eu
 ?>

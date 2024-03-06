@@ -8,6 +8,19 @@ $(document)
   .on('click', '.js_new_farmer_show', function(){
     show_hide_new_farmers_inputs(this);
   })
+  
+.on('click', '.js_new_task_type_show', function(){
+    show_hide_new_task_types_inputs(this);
+  })
+   .on('click', '.js_button_close_task_type_edit', function(){
+    hide_new_task_types_inputs(this);
+  })
+  
+.on('click', '.js_button_open_task_type_edit', function(){
+    show_hide_new_task_types_inputs(this);
+  })
+  
+  
   .on('click', '.js_button_open_user_edit', function(){
     show_hide_new_farmers_inputs(this);
   })
@@ -161,6 +174,34 @@ $(document)
     $('.js_new_farmer_inputs').hide();
     $('.js_new_farmer_show').show();
   }
+  
+  
+    function show_hide_new_task_types_inputs ($button){
+    $form = $('.js_new_task_type_inputs');
+    scrollToHeading('#js_fi_header');
+    if($form.is(":hidden")){
+      clear_form($form);
+      $form.show();
+      if ($($button).hasClass('js_new_task_type_show')){
+        $($button).hide();
+        fill_task_type_form($($button), $form);
+      } else if ($($button).hasClass('js_button_open_task_type_edit')) {
+        $('.js_new_task_type_show').hide();
+        fill_task_type_form($($button), $form);
+      }
+    }else{
+      clear_form($('.js_new_task_type_inputs'));
+      $('.js_new_task_type_show').hide();
+      fill_task_type_form($($button), $form);
+    }
+  }
+
+  function hide_new_task_types_inputs (){
+    $('.js_new_task_type_inputs').hide();
+    $('.js_new_task_type_show').show();
+  }
+  
+  
 
   function getCheckedBoxes(chkboxClassName) {
     var checkboxes = document.getElementsByClassName(chkboxClassName);
@@ -203,6 +244,24 @@ $(document)
       $form.find("#js_fi_pass").attr('required', 'required');
       $form.find("#js_fi_login").attr('required', 'required');
       $form.find("#js_fi_login").removeAttr('disabled');
+    }
+    $form.find("#js_fi_header").html($header);
+    $form.find("#js_fi_act").val($action);
+  }
+  
+  function fill_task_type_form($button, $form){
+    $uid = $button.data('userid');
+    $header = $button.data('formheader');
+    $name = $button.data('username');
+    $description = $button.data('userdescription');
+    $action = "new_task_type";
+    if($uid !== "0" && $uid !== 0){
+      $action = "edit_task_type";
+      $form.find("#js_fi_uid").val($uid);
+      $form.find("#js_fi_name").val($name);
+      $form.find("#js_fi_description").val($description);
+    } else {
+      $form.find("#js_fi_name").attr('required', 'required');
     }
     $form.find("#js_fi_header").html($header);
     $form.find("#js_fi_act").val($action);
