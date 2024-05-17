@@ -56,10 +56,19 @@
 <pagebreak>
 {% endif %}
 <div class="pdf_image_row">
-  <table class="pdf_image_row_table">
+
+  <table class="pdf_image_row_table" autosize="1" width="100%" style="overflow: wrap">
+    <tr>
+      <td class="pdf_image_row_table_td1 text-center" colspan="2">
+        <img style="min-height:400px;" src="photo_detail.php?justimg=1&rotation={{ image.rotation }}&img={{ image.path }}{{ image.file_name }}">
+        {# <img style="min-height:400px;" src="https://pic2bim.co.uk/photo_detail.php?justimg=1&rotation=0&img=./photos4all/7/4/image_17886.jpeg"> #}
+      </td>
+    </tr>
     <tr>
       <td class="pdf_image_row_table_td1">
-        <img src="photo_detail.php?justimg=1&rotation={{ image.rotation }}&img={{ image.path }}{{ image.file_name }}">
+        <div class="photo_map photo_map_pdf_export" style="text-align:center;">
+          <img style="width:50%; height:auto;" src="img/map_tmp/{{ map_prefix }}-{{ image.id }}.png">
+        </div>
       </td>
       <td class="pdf_image_row_table_td2">
         <table class="table">
@@ -92,8 +101,8 @@
             </tr>
             <tr>
               <td class="td td_01"></td>
-              <td class="td">
-                <label class="text_color_{{ image.flg_original }}">
+              <td class="td" style="color: {{ image.flg_original == 1 ? '#1fad4e' : '#df2020' }}">
+                <label>
                   {% if image.flg_original is same as(1) %}
                     {{ pht_original_ok }}
                   {% elseif  image.flg_original is same as(0) %}
@@ -109,9 +118,6 @@
       </td>
     </tr>
   </table>
-  <div class="photo_map photo_map_pdf_export" style="text-align:center;">
-    <img style="width:600px;" src="img/map_tmp/{{ map_prefix }}-{{ image.id }}.png">
-  </div>
 </div>
 {% endfor %}
 <!--Created for the GSA in 2020-2021. Project management: SpaceTec Partners, software development: www.foxcom.eu-->

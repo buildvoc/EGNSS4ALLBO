@@ -8,12 +8,16 @@ var maps_done = false;
 
 $(document)
   .ready(function() {
-
     console.log('ready');
     disable_generate_button();
     photos = $('.js_photos_input').val().split(',');
     $('.js_photo_ids').val(photos[0]);
     //initMap("map_for-"+photos[0]);
+
+    // Trigger prepareMapTilesLoaded to load all maps before pdf export
+    $(window).on('prepareMapTilesLoaded', function(event, mapId) {
+      document.querySelector('#' + mapId)?.scrollIntoView({ behavior: "smooth" });
+    });
 
   })
   .on('click', "#js_confirm_pdf_generate", function(){
@@ -83,12 +87,8 @@ function getMapImg($mapId=0){
       $mapId = "map_for-"+photos[0];
     }
     $("#process_counter_cur").text(cur_photo+1);
-
-    html2canvas($("#"+$mapId)[0],{ useCORS: true }).then(function(canvas) {
+    html2canvas($("#"+$mapId)[0],{ useCORS: true, allowTaint: true, async: false }).then(function(canvas) {
       var dataUrl= canvas.toDataURL("image/png");
-      console.log(canvas.width);
-      console.log(canvas.height);
-      console.log(dataUrl);
       //location.href=dataUrl;
       var map_name = map_prefix+"-"+photos[cur_photo];
       var base64URL = canvas.toDataURL('image/jpeg').replace('image/jpeg', 'image/octet-stream');

@@ -55,7 +55,7 @@ input, .input {font-size: 16px;}
 .form_table select, .form_table .select {height: 35px; border-radius: 6px; padding: 5px 14px; margin: 0 15px 15px 0; border: none; border-bottom: 1px solid lightgrey; background-color: hsl(0deg 0% 92%);}
 .box_dropdown {padding: 20px; border: none; background-color: #e3e3e3;}
 .sortflag .fa, .sortflag .fas {background-color: white; border-radius: 50px;}
-.pdf_loader {position: absolute; top: 0; left: 0; width: 100%; height: 100vh; background-color: #ffffff96; z-index: 999;}
+.pdf_loader {user-select: none; pointer-events: none; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background-color: #ffffff96; z-index: 999;}
 .pdf_loader .inner_cont {
   position: absolute;
   top: 50%;

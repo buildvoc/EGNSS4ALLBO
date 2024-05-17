@@ -18,7 +18,6 @@ var path_points_circles = [];
 if(!map_property){
  var map_property = {zoom: 4, popup_bool: false};
 }
-
 async function initMap($id = "map") {
   clear_vars();
   if (FILTER_TYPE != 'user_paths'){
@@ -29,6 +28,10 @@ async function initMap($id = "map") {
     $("#process_counter_cur").text(cur_photo+1);
     $("#process_counter_max").text(photos.length);
     $id = "map_for-"+photos[0];//change id to first photo
+
+    // Trigger prepareMapTilesLoaded to load all maps before pdf export
+    $(window).trigger('prepareMapTilesLoaded', $id);
+
   }
 
   google.maps.Polygon.prototype.getBoundingBox = function() {
@@ -123,10 +126,19 @@ async function initMap($id = "map") {
         $("#process_counter_cur").text(cur_photo+1);
         clear_vars_pdf();
         $('.js_photo_ids').val(photos[cur_photo]);
+        if (PDF_PREPARE === true){
+          // Trigger prepareMapTilesLoaded to load all maps before pdf export
+          $(window).trigger('prepareMapTilesLoaded', "map_for-"+photos[cur_photo]);
+        }
         initMap("map_for-"+photos[cur_photo]);
+        // Example: Triggering the event with data
+
       } else {
         maps_done = true;
-        enable_generate_button();
+        document.querySelector("main")?.scrollTo(0, 0);
+        setTimeout(() => {
+          enable_generate_button();
+        }, 100);
       }
     });
   }
