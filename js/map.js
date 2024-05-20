@@ -117,7 +117,7 @@ async function initMap($id = "map") {
   }
   if (PDF_PREPARE === true){//when map is loaded, init another one
     map.addListener('tilesloaded', function() {
-      markerCluster.setMap(null);
+      markerCluster?.setMap(null);
       for (i = 0; i < markers.length; i++) {
         markers[i].setMap(null);
       }
@@ -147,7 +147,7 @@ async function initMap($id = "map") {
       if (map !== ""){
         var zoom = map.getZoom();
         if (zoom >= 17){
-          markerCluster.setMap(null);
+          markerCluster?.setMap(null);
           for (i = 0; i < markers.length; i++) {
             markers[i].setMap(null);
           }
@@ -155,7 +155,7 @@ async function initMap($id = "map") {
             popups[i].setMap(map);
           }
         } else {
-          markerCluster.setMap(map);
+          markerCluster?.setMap(map);
           for (i = 0; i < popups.length; i++) {
             popups[i].setMap(null);
           }
