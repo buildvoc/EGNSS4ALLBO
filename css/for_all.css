@@ -1,6 +1,6 @@
 :root {
-    --primary: #5C50DA;
-    --primaryHover: #7164ff;
+    --primary: rgb(50, 173, 230);
+    --primaryHover: rgb(56, 189, 251);
     --secondary: #5F95FF;
     --light: #E9EBFC;
     --lightHover: #eceaff;
@@ -594,7 +594,7 @@ td .form-check-input {
 }
 
 .pdf_loader {
-    background-color: #FFFFFFDD;
+    background-color: #fffffffc;
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
     -moz-backdrop-filter: blur(5px);

@@ -23,4 +23,162 @@ body{
   position: absolute;
   white-space: nowrap;
 }
+
+
+/* info box modal */
+.info-btn {
+  position: fixed;
+  z-index: 100;
+  right: 10px;
+  top: 10px;
+  outline: none;
+  width: 30px;
+  height: 30px;
+  border: none;
+  padding: 4px;
+  background: none;
+  box-sizing: content-box;
+  cursor: pointer;
+}
+.info-btn>svg {
+  display: block;
+  width: 100%;
+  fill: #000;
+}
+
+.info-box {
+  position: fixed;
+  z-index: 1000;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 0;
+  left: 0;
+  overflow-y: auto;
+  opacity: 0;
+  transition: all 0.25s ease;
+  font-weight: 400;
+  font-size: 0.83rem;
+  line-height: 1.66;
+  letter-spacing: 0.03333em;
+}
+.info-box:not(.opened) {
+  pointer-events: none;
+  touch-action: none;
+}
+.info-box.opened {
+  opacity: 1;
+}
+.info-box .overlay {
+  position: fixed;
+    display: flex;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    justify-content: center;
+    inset: 0px;
+    background-color: rgba(0, 0, 0, 0.5);
+    -webkit-tap-highlight-color: transparent;
+    z-index: -1;
+}
+.info-box .info-box-container {
+  width: 400px;
+  max-width: 95%;
+  max-height: 95vh;
+  margin-left: auto;
+  margin-right: auto;
+  background: #fff;
+  padding: 32px 15px 80px 32px;
+  overflow: hidden;
+  position: relative;
+}
+.info-box .info-box-inner-content {
+  max-height: calc(100vh - 125px);
+  padding-right: 5px;
+  overflow: auto;
+}
+
+.info-box .infobox-title {
+  margin-top: 0px;
+  font-weight: 500;
+  font-size: 1.4rem;
+  line-height: 1.4;
+  letter-spacing: 0.0075em;
+  margin-bottom: 1rem;
+}
+
+.info-box p{
+  /* margin: 16px 0px; */
+  margin: 7px 0px 16px;
+}
+
+.info-box ul, .info-box ol {
+  list-style: decimal;
+  list-style-position: inside;
+  margin-left: 0;
+  padding-left: 0;;
+}
+.info-box ul .text-bold, .info-box ol .text-bold {
+  font-weight: 700 !important;
+    font-size: 0.9rem;
+}
+.info-box ul p, .info-box ol p {
+  margin-top: 0;
+}
+.info-box table td{
+  border-bottom: 1px solid rgb(224, 224, 224);
+  padding: 15px 10px;
+  
+}
+
+.info-box h3{
+ margin-top: 1.5rem;
+ font-size: 1.4rem;
+}
+
+.info-box {
+
+}
+
+.info-box {
+
+}
+
+.info-box {
+
+}
+
+.info-box .close-btn {
+  display: inline-flex;
+  -webkit-box-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  justify-content: center;
+  position: absolute;
+  bottom: 17px;
+  right: 22px;
+  z-index: 10;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  background-color: transparent;
+  outline: 0px;
+  cursor: pointer;
+  user-select: none;
+  vertical-align: middle;
+  appearance: none;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.875rem;
+  line-height: 1.75;
+  letter-spacing: 0.02857em;
+  text-transform: uppercase;
+  min-width: 64px;
+  padding: 5px 15px;
+  border-radius: 4px;
+  transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, border-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  border: 1px solid rgba(25, 118, 210, 0.5);
+  color: var(--primary);
+}
 /*Created for the GSA in 2020-2021. Project management: SpaceTec Partners, software development: www.foxcom.eu*/

@@ -56,6 +56,9 @@ function create_pdf($task_id, $user_id, $photos = false, $map_prefix = ""){
   try {
       $mpdf = new \Mpdf\Mpdf(['tempDir' => '../../tmp/egnss4cap', 'mode' => 'utf-8', 'format' => 'A4', 'default_font_size' => 12, 'default_font' => 'Menlo', 'margin_left' => 5, 'margin_right' => 5, 'margin_top' => 25, 'margin_bottom' => 22, 'margin_header' => 5, 'margin_footer' => 5]);
       $mpdf->shrink_tables_to_fit = 1;
+      $mpdf->simpleTables = true;
+      $mpdf->packTableData = true;
+      $mpdf->keep_table_proportions = true;
       $mpdf->img_dpi = 300;
       $mpdf->SetTitle(date("Y.m.d").'_'.$header_text.'.pdf');
 
@@ -63,8 +66,8 @@ function create_pdf($task_id, $user_id, $photos = false, $map_prefix = ""){
       <div class="pdf_top_header">
           <table class="pdf_top_header_table text">
               <tr>
-                  <td class="pdf_top_header_table_td1"><img class="pdf_top_header_logo_img" src="img/logo.png"/></td>
-                  <td class="pdf_top_header_table_td2">EGNSS4CAP export</td>
+                  <td class="pdf_top_header_table_td1"><img class="pdf_top_header_logo_img" src="img/logo_egnss4all_white.png"/></td>
+                  <td class="pdf_top_header_table_td2">PIC2BIM export</td>
                   <td class="pdf_top_header_table_td3">'.$header_text.'</td>
               </tr>
           </table>

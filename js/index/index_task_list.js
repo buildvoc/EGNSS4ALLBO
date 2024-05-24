@@ -75,7 +75,18 @@ function load_table(){
         scrollToTop(rowOffset-100);
       }
 
-      initMap();
+      // first check if google maps loaded or not
+      let intervalId;
+
+      function checkForGoogleMaps() {
+        if (window.google && window.google.maps) {
+          clearInterval(intervalId);
+          initMap();
+        }
+      }
+      
+      intervalId = setInterval(checkForGoogleMaps, 100); 
+      
     }
   })
 }

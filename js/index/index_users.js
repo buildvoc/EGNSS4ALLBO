@@ -57,7 +57,16 @@ function load_table(){
         rowOffset = $('#'+hash).offset().top;
         scrollToTop(rowOffset-100);
       }
-      initMap();
+      let intervalId;
+
+      function checkForGoogleMaps() {
+        if (window.google && window.google.maps) {
+          clearInterval(intervalId);
+          initMap();
+        }
+      }
+      
+      intervalId = setInterval(checkForGoogleMaps, 100); 
     }
   })
 }

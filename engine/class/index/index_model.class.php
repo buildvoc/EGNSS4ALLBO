@@ -40,7 +40,7 @@ class index_model {
     return $users;
   }
 
-  public static function get_farmer_counts(int $farmers_id = 0, $count_type){
+  public static function get_farmer_counts(int $farmers_id = 0, $count_type = ""){
     $count_sql="";
     $ret=0;
     if ($farmers_id !== 0){

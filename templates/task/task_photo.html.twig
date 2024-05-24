@@ -3,7 +3,7 @@
   <div>{{ task_name }}</div>
   <div class=js_popup_border>
     {#<div class="marker_image"><img class="marker_image_img" style="transform: rotate({{ photos[0].rotation }}deg) translate(-50%, 0);" src="../{{ photos[0].path }}{{ photos[0].file_name }}" ></div>#}
-    <div class="marker_image"><img class="marker_image_img" src="photo_detail.php?justimg=1&rotation={{ photos[0].rotation }}&img=../{{ photos[0].path }}{{ photos[0].file_name }}" ></div>
+    <div class="marker_image"><img class="marker_image_img" src="photo_detail.php?justimg=1&rotation={{ photos[0].rotation }}&img=./{{ photos[0].path }}{{ photos[0].file_name }}" ></div>
     <img class="marker_border marker_border_web" src="img/icon_photo.png" >
     <img class="marker_border marker_border_pdf" src="img/icon_photo_pdf.png" style="display: none;">
   <div>
