@@ -4,9 +4,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>
+<meta
+      name="description"
+      content="PIC2BIM is a system that can determine the attributes of buildings in England. The building part (height, absoluteheightminimum, absoluteheightmaximum, heightconfidencelevel, etc) can be defined just by taking a photo."
+    />
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="manifest" href="site.webmanifest">
+<link rel="mask-icon" href="safari-pinned-tab.svg" color="#5bbad5">
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="theme-color" content="#ffffff">
+
+  {# <title>
     {% block title %}{{ title }}{% endblock %}
-  </title>
+  </title> #}
+  <title>Identify building data from a photo</title>
+
 
   {% for style in css %}
   <link rel="stylesheet" type="text/css" href="{{ style }}" />
@@ -21,6 +35,148 @@
 
 <body class="w-100 h-100" id="login">
   <div class="overlap overlap-login"></div>
+  <button class="info-btn" type="button">
+    <svg
+      focusable="false"
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      data-testid="InfoIcon"
+    >
+      <path
+        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"
+      ></path>
+    </svg>
+  </button>
+
+ <div class="info-box">
+  <div class="overlay"></div>
+  <div class="info-box-container">
+    <div class="info-box-inner-content">
+      <h2 class="infobox-title">Identify building height from a photo</h2>
+      <p class="infobox-description">
+        Building-Height is a system that can determine the attributes of
+        historical buildings in England. The building part can be defined just
+        by uploading a photo.
+      </p>
+      <ul class="">
+        <li>
+          <span class="text-bold">Upload an image</span>
+          <p>You can upload or capture from your camera with active GPS</p>
+        </li>
+        <li>
+          <span class="text-bold">Image metadata will be displayed</span>
+          <p>
+            Extracted metadata from the image you uploaded will be displayed
+          </p>
+        </li>
+        <li>
+          <span class="text-bold">Building height will be identified</span>
+          <p>
+            The building height, map location of the building and its attributes
+            will be displayed
+          </p>
+        </li>
+      </ul>
+
+      <h3>3D Navigation</h3>
+
+      <div class="table-responsive">
+        <table
+          class="table"
+          aria-label="3D Navigation controlls"
+        >
+          <tbody>
+            <tr>
+              <td
+                
+              >
+                Pan
+              </td>
+              <td
+                
+              >
+                Mouse Left
+              </td>
+            </tr>
+            <tr>
+              <td
+                
+              >
+                Rotate
+              </td>
+              <td
+                
+              >
+                Mouse Right
+              </td>
+            </tr>
+            <tr>
+              <td
+                
+              ></td>
+              <td
+                
+              >
+                Shift + Mouse Left
+              </td>
+            </tr>
+            <tr>
+              <td
+                
+              >
+                Top-down Camera
+              </td>
+              <td
+                
+              >
+                T
+              </td>
+            </tr>
+            <tr>
+              <td
+                
+              >
+                Perspective Camera
+              </td>
+              <td
+                
+              >
+                P
+              </td>
+            </tr>
+            <tr>
+              <td
+                
+              >
+                Driver Camera
+              </td>
+              <td
+                
+              >
+                D
+              </td>
+            </tr>
+            <tr>
+              <td
+                
+              >
+                Recenter Camera
+              </td>
+              <td
+                
+              >
+                R
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <button class="close-btn" type="button">Close</button>
+  </div>
+</div>
+
+
   <div class="login">
     <div class="login-body">
     
@@ -55,6 +211,35 @@
     </form>
   </div>
   </div>
+
+  <script>
+  var infoBtn = document.querySelector('.info-btn'),
+    infoBox = document.querySelector('.info-box'),
+    infoBoxCloseBtn = infoBox.querySelector('.close-btn'),
+    infoBoxCloseOverlay = infoBox.querySelector('.overlay');
+
+  infoBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    showHideInfoBox(true);
+  });
+
+  infoBoxCloseBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    showHideInfoBox(false);
+  });
+    infoBoxCloseOverlay.addEventListener('click', function(e) {
+    e.preventDefault();
+    showHideInfoBox(false);
+  });
+
+  function showHideInfoBox(showInfoBox) {
+    if(showInfoBox) {
+      infoBox.classList.add('opened');
+    } else {
+      infoBox.classList.remove('opened');
+    }
+  }
+  </script>
 </body>
 
 </html>
