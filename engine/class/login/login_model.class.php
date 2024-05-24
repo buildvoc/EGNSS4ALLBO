@@ -24,7 +24,7 @@ class login_model{
   public function verify_user_login($login, $pass){
     $sql = dibi::select('u.id')->as('user_id')->select('u.name, u.surname')
     ->from('user u')
-    ->where('login = %s', $login)->where('pswd = %s', $pass);
+    ->where('login = %s', $login)->where('pswd = %s', $pass)->where('active = %i', 1); // add checking for is active user
     $user_rec = $sql->fetch();
     if($user_rec){
         self::log_user($user_rec['user_id']);
