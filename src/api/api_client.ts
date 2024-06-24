@@ -12,7 +12,6 @@ export const login = async (data:login_user) => {
   console.log("Login user...",login_user);
   try {
       const response = await fetch("https://api.pic2bim.co.uk/comm_login.php",{
-        mode: 'no-cors',
         method:'POST',
         headers:{
           'Content-Type': 'application/json',
