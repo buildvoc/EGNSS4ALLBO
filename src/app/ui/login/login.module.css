@@ -9,6 +9,7 @@
   background-repeat: no-repeat;
   background-position: center;
   opacity: 1;
+  color: var(--primary);
 }
 /* LOGIN */
 
