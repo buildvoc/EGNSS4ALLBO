@@ -1,17 +1,46 @@
 :root{
-  --bg:white;
-  --bgSoft:#c1c3c3;
+  --primary: rgb(50, 173, 230);
+  --primaryHover: rgb(56, 189, 251);
+  --secondary: #5F95FF;
+  --light: #E9EBFC;
+  --lightHover: #eceaff;
+  --dark:  #2D3142;
+  --border: #cecbeb;
+  --success: #31ba51;
+  --successHover: #35c757;
+  --warning: #ffc107;
+  --warningHover: #ffce3a;
+  --danger: #ed2c3f;
+  --dangerHover: #f73a4d;
+  --shadow24: 0px 8px 24px rgba(0, 0, 0 , .08)
 }
 *{
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
-body{
-  background-color: var(--bg);
-  color: var(--text);
+@font-face {
+  font-family: 'MyCustomFont';
+  src: url('/fonts/MyCustomFont.woff2') format('woff2'),
+       url('/fonts/MyCustomFont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
 }
+
+
+body{
+  color: var(--dark);
+  font-family: 'Roboto-regular', Helvetica, sans-serif;
+}
+
 a{
   color: inherit;
   text-decoration: none;
 }
+
+.overlap {
+  background-image: none;
+  background: var(--light);
+  opacity: 1;
+}
+
