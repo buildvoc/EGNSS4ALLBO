@@ -5,9 +5,11 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "pm2 start npm --name EGNSS4ALLBO -- run start",
+    "start": "next start",
+    "start_production": "pm2 start npm --name EGNSS4ALLBO -- run start",
     "lint": "next lint"
   },
+
   "dependencies": {
     "bootstrap": "^5.3.3",
     "next": "14.2.4",
