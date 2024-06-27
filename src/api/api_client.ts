@@ -2,9 +2,10 @@
 import { authentication_response } from "@/types/user_types";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-const endpoint = process.env.REACT_APP_SERVICE_URI
-  ? process.env.REACT_APP_SERVICE_URI
-  : "http://localhost/api/EGNSS4ALLSERVICES/";
+// const endpoint = process.env.REACT_APP_SERVICE_URI
+//   ? process.env.REACT_APP_SERVICE_URI
+//   : "http://localhost/api/EGNSS4ALLSERVICES/";
+const endpoint = "https://api.pic2bim.co.uk/egnss4allservices/"
 
 export const login = async (event: any) => {
   "use server";
