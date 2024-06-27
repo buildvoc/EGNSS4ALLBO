@@ -11,6 +11,9 @@
   opacity: 1;
   color: var(--primary);
 }
+
+
+
 /* LOGIN */
 
 .login {
@@ -50,10 +53,6 @@
     margin-top: 0 !important;
 }
 
-.btn_login {
-    min-width: 160px;
-}
-
 @media (max-width:767px) {
     .login {
         width: 80vw !important;
@@ -69,27 +68,26 @@
     }
 }
 
-.form_control,
-.select {
-  border-bottom: none !important;
+
+
+.label {
+    font-size: 1rem;
+    color: var(--primary);
+    /* font-family: 'Roboto-regular'; */
+    margin-bottom: .2rem;
 }
 
-.form_control,
-#login input,
-.form_table input,
-.form_table .input {
+.form_control {
   background-color: var(--light);
   margin-bottom: 1rem;
   border-radius: 0.25rem;
   padding: 0.4rem 1rem;
   border: 1px solid transparent !important;
   transition: all 0.2s ease-in-out !important;
+
 }
 
-.form_control:focus,
-#login input:focus,
-.form_table input:focus,
-.form_table .input:focus {
+.form_control:focus {
   border: 1px solid var(--primary) !important;
   box-shadow: none;
 }
@@ -125,7 +123,8 @@
 }
 
 .btn {
-  font-family: "Roboto-bold";
+  /* font-family: "Roboto"; */
+  font-weight: bold;
   padding: 0.5rem 1.5rem;
   transition: all 0.2s ease-in-out;
 }
@@ -134,7 +133,4 @@ button.primary:hover {
 }
 .btn_login {
   min-width: 160px;
-}
-.my_4 {
-  margin-top: 1.5rem !important;
 }

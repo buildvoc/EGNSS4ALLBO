@@ -74,7 +74,15 @@ display: flex;
 
 }
 .logout{
-
+  margin-right: .25rem;
+  vertical-align: sub;
+}
+.link{
+  color:white;
+  font-weight: 500;
+}
+.link:hover{
+  color:var(--lightHover);
 }
 .text{
     padding: 0 5px;
