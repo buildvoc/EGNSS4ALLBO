@@ -1,0 +1,177 @@
+.container{
+flex:1;
+padding: 0px 20px;
+}
+
+.map_continer{
+    height: 50vh;
+}
+
+.map_dropdown_btn {
+    color: white;
+    border-color: var(--primary);
+    background-color: var(--primary);
+    margin-top: 20px;
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+    transition: all .2s ease-in-out;
+}
+
+.map_dropdown_btn span {
+    font-weight: 500;
+}
+
+.map_dropdown_btn:hover {
+    color: white;
+    border-color: var(--primaryHover);
+    background-color: var(--primaryHover);
+
+} 
+
+.map_icon{
+    margin-right: 5px
+}
+
+
+
+
+/* Default table styling */
+.table_responsive {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 50px;
+  }
+  
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    
+  }
+  
+  .table th, 
+  .table td {
+    padding: 10px;
+    text-align: left;
+    border-left: none;
+    border-right: none;
+    border-bottom: 1px solid #ddd;
+    border-top: 1px solid #ddd;
+
+  }
+  
+  .table th {
+     font-weight: 600;
+
+  }
+  .table thead {
+    border-top: 1px solid #ddd;
+
+  }
+
+  .showing_count
+  {
+    color: #a6a0dd;
+    margin-bottom: .2rem;
+    text-align: center;
+  }
+  
+  .table td {
+    position: relative;
+    font-weight: 200;
+    border-bottom: 1px solid var(--light);
+    border-top: 1px solid #ddd;
+    padding: 15px 10px;
+  }
+
+ 
+/* Hover effect for table rows */
+.table tbody tr:hover td {
+    background-color: rgba(92, 80, 218, .5);
+    cursor: pointer;
+    color: white;
+  }
+  
+  /* Optionally, if you want to add a hover effect with transition */
+  .table tbody tr td {
+    transition: background-color 0.3s ease;
+  }
+
+/* Hover effect for table rows */
+.table thead th:hover {
+    background-color:var(--primary);
+    cursor: pointer;
+    color: white;
+
+
+  }
+  
+  /* Optionally, if you want to add a hover effect with transition */
+  .table thead  th {
+    transition: background-color 0.3s ease;
+  }
+
+  .table td[data-label]:before {
+    content: attr(data-label);
+    position: absolute;
+    left: 0;
+    width: 50%;
+    padding-left: 15px;
+    white-space: nowrap;
+    text-align: left;
+    font-weight: bold;
+    display: none;
+
+  }
+  
+  /* Mobile Styles */
+  @media (max-width: 768px) {
+    .table thead {
+      display: none;
+    }
+  
+    .table tbody,
+    .table tr,
+    .table th,
+    .table td {
+      display: block;
+      width: 100%;
+      border-bottom: 0px solid transparent;
+      border-top: 0px solid transparent;
+
+
+    }
+  
+    .table td {
+      text-align: right;
+      padding-left: 50%;
+    }
+  
+    .table td[data-label]:before {
+      display: block;
+    }
+  }
+
+
+ 
+
+/* yellow */ .task_status.new {background: #FFD705;}
+/* blue */ .task_status.open, .btn_status.btn-light {background: #2b6cff;}
+/* default white */ .task_status.dataprovided {background: #cecece;}
+/* green */ .task_status.datachecked_1, .btn_status.btn-success {background: #52B741;}
+/* red */ .task_status.datachecked_2, .btn_status.btn-danger {background:#ff0202;}
+/* purple */ .task_status.returned {background: #b308be;}
+
+.task_status.new,
+.task_status.open,
+.btn_status.btn-light,
+.task_status.dataprovided,
+.task_status.datachecked_1,
+.btn_status.btn-success,
+.task_status.datachecked_2,
+.btn_status.btn-danger,
+.task_status.returned {
+  border-radius: 0.25rem;
+  color: white;
+  border: none;
+  font-family: 'Roboto-bold';
+}

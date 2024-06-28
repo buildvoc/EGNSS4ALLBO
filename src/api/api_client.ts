@@ -2,10 +2,7 @@
 import { authentication_response } from "@/types/user_types";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-// const endpoint = process.env.REACT_APP_SERVICE_URI
-//   ? process.env.REACT_APP_SERVICE_URI
-//   : "http://localhost/api/EGNSS4ALLSERVICES/";
-const endpoint = "https://api.pic2bim.co.uk/egnss4allservices/"
+const endpoint = process.env.APP_SERVICE_URI
 
 export const login = async (event: any) => {
   "use server";
@@ -29,4 +26,35 @@ export const login = async (event: any) => {
   } else {
     return { error: "Login credentials don't match!" };
   }
+};
+
+export const get_tasks = async (user_id: number) => {
+  "use server";
+
+try{
+  const response = await fetch(
+    `${endpoint}comm_tasks.php?user_id=${user_id}`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  let res: any = await response.json();
+
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+  if (res.tasks) {
+    return res?.tasks;
+  } else {
+    return [];
+  }
+
+}catch (error) {
+  console.error("Failed to fetch the catalogue:", error);
+  return []; 
+}
+
 };

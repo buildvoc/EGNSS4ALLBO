@@ -1,5 +1,4 @@
 "use client";
-import { usePathname } from "next/navigation";
 import styles from "./navbar.module.css";
 import { FaSignOutAlt } from "react-icons/fa";
 import { Navbar, Nav, NavDropdown, Container } from "react-bootstrap";
@@ -19,8 +18,6 @@ const Navbar_ = () => {
         let user:authenticated_user = await JSON.parse(session?.value)
         set_name(`${user.name} ${user.surname}`)
     })()
-  
-    // set_name(JSON.parse(session?.value))
   },[])
   return (
     <div className={styles.container}>

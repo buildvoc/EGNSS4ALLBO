@@ -1,5 +1,6 @@
 .container{
     display: flex;
+    background-color:var(--light);
 }
 
 .content{
@@ -7,3 +8,13 @@
     background-color: var(--bgSoft);
     justify-content: space-between;
 }
+.wrapper{
+   display: flex; 
+   margin-top: 20px;
+}
+
+.farmers_tasks{
+   flex:1;
+ }
+
+ 
