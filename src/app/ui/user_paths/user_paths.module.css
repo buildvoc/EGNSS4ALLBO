@@ -1,0 +1,23 @@
+.container {
+  flex:1;
+  padding: 0px 20px;
+}
+.btn {
+  font-weight: bold;
+  /* font-family: "Roboto-bold"; */
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+  padding: 0;
+  margin: 0;
+}
+.map_div {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  margin-top: 20px;
+  border-radius: 5px;
+}
+
+.chevron_style {
+  margin-bottom: 2px;
+}

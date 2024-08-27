@@ -1,0 +1,10 @@
+
+
+.table{
+    color: var(--dark);
+}
+
+.table td {
+    padding: 5px 0px;
+}
+

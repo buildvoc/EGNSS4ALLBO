@@ -1,0 +1,19 @@
+.container{
+    display: flex;
+}
+
+.content{
+    flex:1;
+    background-color: var(--bgSoft);
+    justify-content: space-between;
+}
+.wrapper{
+   display: flex; 
+   margin-top: 20px;
+}
+
+.farmers_tasks{
+   flex:1;
+ }
+
+ 
