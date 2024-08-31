@@ -29,7 +29,7 @@ const User_paths = () => {
     (async () => {
       let data = await get_paths(id);
       setPaths(data);
-      console.log("data---", data, id);
+      // console.log("data---", data, id);
     })();
   }, []);
 
