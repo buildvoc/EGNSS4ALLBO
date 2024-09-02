@@ -1,18 +1,14 @@
 "use client";
 import { useRef, useEffect, memo } from "react";
 import "mapbox-gl/dist/mapbox-gl.css";
-import ReactDOM from "react-dom";
 import { loadJQuery } from "@/utils/helpers";
-
 import mapboxgl from "mapbox-gl";
-import styles from "./map.module.css";
 import ToggleControl from "../dashboard/farmers_tasks/toggle_control/toggle_control";
 import { createRoot } from "react-dom/client";
 import TaskPhoto from "../dashboard/farmers_tasks/task_photo/task_photo";
-import { zIndex } from "html2canvas/dist/types/css/property-descriptors/z-index";
-import { opacity } from "html2canvas/dist/types/css/property-descriptors/opacity";
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN as any;
 import CustomPopup from "./CustomPopup";
+import path from "path";
 
 const Map = ({
   map_tasks_array,
@@ -20,7 +16,7 @@ const Map = ({
   style,
   className,
   setIsMapLoad,
-  points,
+  paths,
 }: any) => {
   //Refs
   const mapNode = useRef<any | HTMLDivElement>(null);
@@ -91,15 +87,31 @@ const Map = ({
       });
     }
 
-    if (map_tasks_array.length > 0|| points) {
+    if (map_tasks_array.length > 0|| paths) {
       mapRef.current = mapboxMap;
       // ref.current=mapboxMap
       //Get all coordinates from tasks
 
       // Path check
-      if(points)
+      if(paths&&map_tasks_array&&paths.length>0)
       {
-          loadPath()
+
+        const coordintates = paths.map((path: any) =>{
+        let coordsArray=  path.points.map((coord:any)=>[coord.lng,coord.lat]);
+          return coordsArray
+        } );
+
+      let bounds = calculateBoundingBox(coordintates.flat());
+
+        mapboxMap.fitBounds(bounds, {
+          padding: { top: 60, bottom: 60, left: 20, right: 20 },
+          duration: 0,
+          linear: true,
+        });
+
+        paths?.map((path:any)=>{
+          loadPath(path)
+        }) 
       }
       else
       {
@@ -116,7 +128,7 @@ const Map = ({
             addMarkers(task);
           });
   
-          if (map_tasks_array.length == 1) {
+          if (map_tasks_array.length == 1 ) {
             mapboxMap.fitBounds(bounds, {
               padding: { top: 60, bottom: 60, left: 20, right: 20 },
               duration: 0,
@@ -125,11 +137,15 @@ const Map = ({
             });
             insertMarkers();
           } else {
-            mapboxMap.fitBounds(bounds, {
-              padding: { top: 60, bottom: 60, left: 20, right: 20 },
-              duration: 0,
-              linear: true,
-            });
+            if(map_tasks_array.length>0)
+            {
+              mapboxMap.fitBounds(bounds, {
+                padding: { top: 60, bottom: 60, left: 20, right: 20 },
+                duration: 0,
+                linear: true,
+              });
+            }
+
             // Handle image change based on zoom level
             mapboxMap.on("zoom", () => {
               updateUnclusteredIcon(mapboxMap);
@@ -285,19 +301,20 @@ const Map = ({
 
 
 
-  const loadPath = () => {
+  const loadPath = (path:any) => {
 
     mapRef.current.on("load", () => {
-      const coordinates = points.map((point: any) => [
+      const coordinates = path.points.map((point: any) => [
         parseFloat(point.lng),
         parseFloat(point.lat),
       ]);
 
+
+
       // Add the first point at the end to close the loop
       coordinates.push(coordinates[0]);
-
       // Add a data source containing GeoJSON data.
-      mapRef.current.addSource("maine", {
+      mapRef.current.addSource(path.id, {
         type: "geojson",
         data: {
           type: "Feature",
@@ -308,44 +325,44 @@ const Map = ({
           },
         },
       });
-
       // Add a new layer to visualize the polygon.
       mapRef.current.addLayer({
-        id: "maine",
+        id: path.id,
         type: "fill",
-        source: "maine", // reference the data source
+        source: path.id, // reference the data source
         layout: {},
         paint: {
           "fill-color": "#9a97f2", // blue color fill
           "fill-opacity": 0.2,
-          zIndex: 1,
         },
       });
       // Add a black outline around the polygon.
       mapRef.current.addLayer({
-        id: "outline",
+        id: `outline_${path.id}`,
         type: "line",
-        source: "maine",
+        source: path.id,
         layout: {},
         paint: {
           "line-color": "#0401fc",
           "line-width": 2,
-          zIndex: 1,
-          opacity: 0.7,
         },
       });
 
       // Prepare point data for circles
-      const pointFeatures = coordinates.map((coord: any) => ({
+      const pointFeatures = coordinates.map((coord: any,index:number) => ({
         type: "Feature",
         geometry: {
           type: "Point",
           coordinates: coord,
         },
+        properties: {
+          details:path.points[--index],
+          points:index
+        },
       }));
 
       // Add a data source containing GeoJSON data for the points.
-      mapRef.current.addSource("points", {
+      mapRef.current.addSource(`points_${path.id}`, {
         type: "geojson",
         data: {
           type: "FeatureCollection",
@@ -354,13 +371,13 @@ const Map = ({
       });
 
       mapRef.current.addLayer({
-        id: "circles",
+        id: `circles_${path.id}`,
         type: "circle",
-        source: "points",
+        source: `points_${path.id}`,
         layout: {},
         paint: {
           "circle-radius": 5,
-          "circle-color": "#0401fc", // red color fill "#0401fc"
+          "circle-color": "#0401fc", 
           "circle-stroke-width": 1,
           "circle-opacity": 0.8,
           "circle-stroke-color": "#0401fc",
@@ -368,19 +385,19 @@ const Map = ({
       });
 
       // Add click event listeners to change colors to yellow
-      mapRef.current.on("click", "maine", () => {
-        mapRef.current.setPaintProperty("maine", "fill-color", "#ffd219"); // yellow color
-        mapRef.current.setPaintProperty("maine", "fill-opacity", 0.7); // yellow color
-        mapRef.current.setPaintProperty("outline", "line-color", "#ffd219"); // yellow outline
-        mapRef.current.setPaintProperty("circles", "circle-color", "#ffd219"); // yellow circles
+      mapRef.current.on("click", path.id, () => {
+        mapRef.current.setPaintProperty(path.id, "fill-color", "#ffd219"); // yellow color
+        mapRef.current.setPaintProperty(path.id, "fill-opacity", 0.7); // yellow color
+        mapRef.current.setPaintProperty(`outline_${path.id}`, "line-color", "#ffd219"); // yellow outline
+        mapRef.current.setPaintProperty(`circles_${path.id}`, "circle-color", "#ffd219"); // yellow circles
         mapRef.current.setPaintProperty(
-          "circles",
+          `circles_${path.id}`,
           "circle-stroke-color",
           "#ffd219"
         ); // yellow circles
       });
 
-      mapRef.current.on("click", "circles", (e: any) => {
+      mapRef.current.on("click", `circles_${path.id}`, (e: any) => {
         (async ()=>{
           const $ = await loadJQuery();
           $('.mapboxgl-popup-content').removeClass('mapboxgl-popup-content').addClass('cus-mapboxgl-popup-content');
@@ -389,38 +406,41 @@ const Map = ({
         })()
 
         const coordinates = e.features[0].geometry.coordinates.slice();
+        const details=JSON.parse(e.features[0].properties.details)
+        const points=JSON.parse(e.features[0].properties.points)
+
         // Render the React component into the DOM element
         const el: any = document.createElement("div");
         const root = createRoot(el);
         root.render(
-          <CustomPopup onClose={() => popup.remove()} /> // Pass any props you need
+          <CustomPopup points={points} pathText={path.name} latitude={details.lat} longitude={details.lng} altitude={details.altitude} accuracy={details.accuracy} time={details.created}/> // Pass any props you need
         );
 
         const popup = new mapboxgl.Popup({maxWidth:"320px"}).setLngLat(coordinates).setDOMContent(el).addTo(mapRef.current)
     
       });
 
-      mapRef.current.on("mouseenter", "maine", () => {
+      mapRef.current.on("mouseenter", path.id, () => {
         mapRef.current.getCanvas().style.cursor = "pointer";
       });
 
-      mapRef.current.on("mouseleave", "maine", () => {
+      mapRef.current.on("mouseleave", path.id, () => {
         mapRef.current.getCanvas().style.cursor = "";
       });
 
       // Click event on the map to detect if the click is outside the polygon
       mapRef.current.on("click", (e: any) => {
         const features = mapRef.current.queryRenderedFeatures(e.point, {
-          layers: ["maine"], // check for clicks on the 'maine' polygon
+          layers: [path.id], // check for clicks on the 'maine' polygon
         });
 
         if (!features.length) {
           // If no features are returned, the click was outside the polygon
-          mapRef.current.setPaintProperty("maine", "fill-color", "#9a97f2"); // reset to initial color
-          mapRef.current.setPaintProperty("outline", "line-color", "#0401fc"); // reset outline to initial color
-          mapRef.current.setPaintProperty("circles", "circle-color", "#0401fc"); // yellow circles
+          mapRef.current.setPaintProperty(path.id, "fill-color", "#9a97f2"); // reset to initial color
+          mapRef.current.setPaintProperty(`outline_${path.id}`, "line-color", "#0401fc"); // reset outline to initial color
+          mapRef.current.setPaintProperty(`circles_${path.id}`, "circle-color", "#0401fc"); // yellow circles
           mapRef.current.setPaintProperty(
-            "circles",
+            `circles_${path.id}`,
             "circle-stroke-color",
             "#0401fc"
           ); // yellow circles
@@ -436,10 +456,13 @@ const Map = ({
 
       // Create a custom HTML element (a simple text box)
       const textBox = document.createElement("div");
-      textBox.textContent = "Your Text Here"; // Set your desired text
+      textBox.textContent = path.name // Set your desired text
       textBox.style.backgroundColor = "white"; // White background
+      textBox.style.fontSize = "14px"; // White background
       textBox.style.border = "1px solid #ccc"; // Light grey border
-      textBox.style.padding = "5px"; // Padding inside the box
+      textBox.style.padding = "10px"; // Padding inside the box
+      textBox.style.paddingRight = "20px"; // Padding inside the box
+
       textBox.style.borderRadius = "3px"; // Rounded corners
       textBox.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.2)"; // Subtle shadow
 

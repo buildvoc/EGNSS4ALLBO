@@ -25,7 +25,7 @@ const CustomPopup = ({
 }: any) => {
   return (
     <div style={styles.container}>
-      <h6 style={styles.heading}>{points}</h6>
+      <h6 style={styles.heading}>Point {points}</h6>
       <div style={styles.text}>Path: {pathText}</div>
       <div style={styles.text}>Latitude: {latitude}</div>
       <div style={styles.text}>Longitude: {longitude}</div>
