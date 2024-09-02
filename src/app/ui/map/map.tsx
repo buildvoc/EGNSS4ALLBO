@@ -74,6 +74,8 @@ const Map = ({
       zoom: 2.7,
       preserveDrawingBuffer: setIsMapLoad != undefined && true,
     });
+    mapboxMap.addControl(toggleControl, "top-left");
+    mapboxMap.addControl(new mapboxgl.NavigationControl());
     const bounds: any = [
       [-180, -85],
       [180, 85],
@@ -120,8 +122,7 @@ const Map = ({
         let bounds = calculateBoundingBox(coordintates);
   
         mapboxMap.on("load", () => {
-          mapboxMap.addControl(toggleControl, "top-left");
-          mapboxMap.addControl(new mapboxgl.NavigationControl());
+   
   
           //Setup markers
           map_tasks_array.forEach((task: any) => {
