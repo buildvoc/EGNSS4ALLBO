@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useEffect, memo } from "react";
+import { useRef, useEffect, memo, useState } from "react";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { loadJQuery } from "@/utils/helpers";
 import mapboxgl from "mapbox-gl";
@@ -9,6 +9,7 @@ import TaskPhoto from "../dashboard/farmers_tasks/task_photo/task_photo";
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN as any;
 import CustomPopup from "./CustomPopup";
 import path from "path";
+import { map } from "jquery";
 
 const Map = ({
   map_tasks_array,
@@ -22,7 +23,25 @@ const Map = ({
   const mapNode = useRef<any | HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
   const markerRef = useRef<any>([]);
-  const toggleControl = new ToggleControl();
+  const [mapStyle,setMapStyle]=useState('mapbox://styles/mapbox/streets-v11')
+
+
+  const mapViewClickHandler = () => {
+    console.log('Map View button clicked');
+    setMapStyle('mapbox://styles/mapbox/streets-v11')
+
+    // Add your custom logic here
+};
+
+const satelliteViewClickHandler = () => {
+    console.log('Satellite View button clicked');
+    setMapStyle('mapbox://styles/mapbox/satellite-v9')
+    // Add your custom logic here
+};
+const toggleControl = new ToggleControl({
+  onMapViewClick: mapViewClickHandler,
+  onSatelliteViewClick: satelliteViewClickHandler
+});
 
   useEffect(() => {
     markerRef.current = [];
@@ -31,7 +50,7 @@ const Map = ({
     return () => {
       mapRef.current = null;
     };
-  }, [map_tasks_array]);
+  }, [map_tasks_array,mapStyle]);
 
   useEffect(() => {
     loadMapBox();
@@ -69,11 +88,29 @@ const Map = ({
     const mapboxMap = new mapboxgl.Map({
       container: node,
       accessToken: process.env.NEXT_PUBLIC_MAPBOX_TOKEN,
-      style: "mapbox://styles/mapbox/streets-v11",
+      style: mapStyle,
       center: [0.166022, 51.288998],
       zoom: 2.7,
       preserveDrawingBuffer: setIsMapLoad != undefined && true,
     });
+    mapboxMap.on('load',()=>{
+
+      mapboxMap.addLayer({
+        'id': 'satellite-layer',
+        'source': {
+            'type': 'raster',
+            'url': 'mapbox://mapbox.satellite',
+            'tileSize': 256
+        },
+        'type': 'raster',
+        'layout': {
+            'visibility': 'none' // Start with satellite layer hidden
+        }
+    });
+
+    })
+
+
     mapboxMap.addControl(toggleControl, "top-left");
     mapboxMap.addControl(new mapboxgl.NavigationControl());
     const bounds: any = [
@@ -89,21 +126,22 @@ const Map = ({
       });
     }
 
-    if (map_tasks_array.length > 0|| paths) {
+    if (map_tasks_array.length > 0 || paths) {
       mapRef.current = mapboxMap;
       // ref.current=mapboxMap
       //Get all coordinates from tasks
 
       // Path check
-      if(paths&&map_tasks_array&&paths.length>0)
-      {
+      if (paths && map_tasks_array && paths.length > 0) {
+        const coordintates = paths.map((path: any) => {
+          let coordsArray = path.points.map((coord: any) => [
+            coord.lng,
+            coord.lat,
+          ]);
+          return coordsArray;
+        });
 
-        const coordintates = paths.map((path: any) =>{
-        let coordsArray=  path.points.map((coord:any)=>[coord.lng,coord.lat]);
-          return coordsArray
-        } );
-
-      let bounds = calculateBoundingBox(coordintates.flat());
+        let bounds = calculateBoundingBox(coordintates.flat());
 
         mapboxMap.fitBounds(bounds, {
           padding: { top: 60, bottom: 60, left: 20, right: 20 },
@@ -111,25 +149,21 @@ const Map = ({
           linear: true,
         });
 
-        paths?.map((path:any)=>{
-          loadPath(path)
-        }) 
-      }
-      else
-      {
+        paths?.map((path: any) => {
+          loadPath(path);
+        });
+      } else {
         const coordintates = map_tasks_array.map((task: any) => task.location);
         //Calculate bounding
         let bounds = calculateBoundingBox(coordintates);
-  
+
         mapboxMap.on("load", () => {
-   
-  
           //Setup markers
           map_tasks_array.forEach((task: any) => {
             addMarkers(task);
           });
-  
-          if (map_tasks_array.length == 1 ) {
+
+          if (map_tasks_array.length == 1) {
             mapboxMap.fitBounds(bounds, {
               padding: { top: 60, bottom: 60, left: 20, right: 20 },
               duration: 0,
@@ -138,8 +172,7 @@ const Map = ({
             });
             insertMarkers();
           } else {
-            if(map_tasks_array.length>0)
-            {
+            if (map_tasks_array.length > 0) {
               mapboxMap.fitBounds(bounds, {
                 padding: { top: 60, bottom: 60, left: 20, right: 20 },
                 duration: 0,
@@ -151,7 +184,7 @@ const Map = ({
             mapboxMap.on("zoom", () => {
               updateUnclusteredIcon(mapboxMap);
             });
-  
+
             // Load your custom image
             mapboxMap.loadImage(
               "/group_marker/m5.png",
@@ -160,7 +193,7 @@ const Map = ({
                 mapboxMap.addImage("m5", image);
               }
             );
-  
+
             const markerImages: any = {
               "data checked": "/map_marker/marker_datachecked_1.png",
               "data provided": "/map_marker/marker_dataprovided.png",
@@ -169,7 +202,7 @@ const Map = ({
               returns: "/map_marker/marker_returned.png",
               unassigned: "/map_marker/marker_unassigned.png",
             };
-  
+
             // Load all marker images and add them to the map
             const loadImagePromises = Object.keys(markerImages).map(
               (status: any) =>
@@ -187,7 +220,7 @@ const Map = ({
                   );
                 })
             );
-  
+
             Promise.all(loadImagePromises).then(() => {
               mapboxMap.addSource("tasks_photos", {
                 type: "geojson",
@@ -212,7 +245,7 @@ const Map = ({
                 clusterMaxZoom: 14, // Max zoom to cluster points on
                 clusterRadius: 50, // Radius of each cluster when clustering points (defaults to 50)
               });
-  
+
               mapboxMap.addLayer({
                 id: "clusters",
                 type: "symbol",
@@ -228,7 +261,7 @@ const Map = ({
                   "text-size": 12,
                 },
               });
-  
+
               mapboxMap.addLayer({
                 id: "unclustered-point",
                 type: "symbol",
@@ -240,50 +273,55 @@ const Map = ({
                   "icon-image": ["concat", "marker-", ["get", "status"]],
                 },
               });
-  
+
               mapboxMap.on("mouseenter", "unclustered-point", () => {
                 mapboxMap.getCanvas().style.cursor = "pointer";
               });
-  
+
               mapboxMap.on("mouseleave", "unclustered-point", () => {
                 mapboxMap.getCanvas().style.cursor = "";
               });
-  
+
               // handle zoom level
-  
+
               // Handle image change based on zoom level
               mapboxMap.on("zoom", () => {
                 updateUnclusteredIcon(mapboxMap);
               });
-  
+
               // inspect a cluster on click
               mapboxMap.on("click", "clusters", (e) => {
                 const features: any = mapboxMap.queryRenderedFeatures(e.point, {
                   layers: ["clusters"],
                 });
-  
+
                 const clusterId = features[0].properties.cluster_id;
                 mapboxMap
                   .getSource("tasks_photos")
-                  ?.getClusterExpansionZoom(clusterId, (err: any, zoom: any) => {
-                    if (err) return;
-  
-                    mapboxMap.jumpTo({
-                      center: features[0].geometry.coordinates,
-                      zoom: zoom,
-                    });
-                  });
+                  ?.getClusterExpansionZoom(
+                    clusterId,
+                    (err: any, zoom: any) => {
+                      if (err) return;
+
+                      mapboxMap.jumpTo({
+                        center: features[0].geometry.coordinates,
+                        zoom: zoom,
+                      });
+                    }
+                  );
               });
-  
+
               mapboxMap.on("click", "unclustered-point", (e: any) => {
                 // Ensure that the unclustered points may appear on the screen
-                const coordinates = JSON.parse(e.features[0].properties.location);
+                const coordinates = JSON.parse(
+                  e.features[0].properties.location
+                );
                 mapboxMap.jumpTo({
                   center: coordinates,
                   zoom: 16, // Specify your zoom level here
                 });
               });
-  
+
               mapboxMap.on("mouseenter", "clusters", () => {
                 mapboxMap.getCanvas().style.cursor = "pointer";
               });
@@ -294,23 +332,17 @@ const Map = ({
           }
         });
       }
-
-
     }
     return mapboxMap;
   };
 
-
-
-  const loadPath = (path:any) => {
-
+  const loadPath = (path: any) => {
     mapRef.current.on("load", () => {
+
       const coordinates = path.points.map((point: any) => [
         parseFloat(point.lng),
         parseFloat(point.lat),
       ]);
-
-
 
       // Add the first point at the end to close the loop
       coordinates.push(coordinates[0]);
@@ -350,15 +382,15 @@ const Map = ({
       });
 
       // Prepare point data for circles
-      const pointFeatures = coordinates.map((coord: any,index:number) => ({
+      const pointFeatures = coordinates.map((coord: any, index: number) => ({
         type: "Feature",
         geometry: {
           type: "Point",
           coordinates: coord,
         },
         properties: {
-          details:path.points[--index],
-          points:index
+          details: path.points[--index],
+          points: index,
         },
       }));
 
@@ -378,7 +410,7 @@ const Map = ({
         layout: {},
         paint: {
           "circle-radius": 5,
-          "circle-color": "#0401fc", 
+          "circle-color": "#0401fc",
           "circle-stroke-width": 1,
           "circle-opacity": 0.8,
           "circle-stroke-color": "#0401fc",
@@ -389,8 +421,16 @@ const Map = ({
       mapRef.current.on("click", path.id, () => {
         mapRef.current.setPaintProperty(path.id, "fill-color", "#ffd219"); // yellow color
         mapRef.current.setPaintProperty(path.id, "fill-opacity", 0.7); // yellow color
-        mapRef.current.setPaintProperty(`outline_${path.id}`, "line-color", "#ffd219"); // yellow outline
-        mapRef.current.setPaintProperty(`circles_${path.id}`, "circle-color", "#ffd219"); // yellow circles
+        mapRef.current.setPaintProperty(
+          `outline_${path.id}`,
+          "line-color",
+          "#ffd219"
+        ); // yellow outline
+        mapRef.current.setPaintProperty(
+          `circles_${path.id}`,
+          "circle-color",
+          "#ffd219"
+        ); // yellow circles
         mapRef.current.setPaintProperty(
           `circles_${path.id}`,
           "circle-stroke-color",
@@ -399,26 +439,39 @@ const Map = ({
       });
 
       mapRef.current.on("click", `circles_${path.id}`, (e: any) => {
-        (async ()=>{
+        (async () => {
           const $ = await loadJQuery();
-          $('.mapboxgl-popup-content').removeClass('mapboxgl-popup-content').addClass('cus-mapboxgl-popup-content');
-          $('.mapboxgl-popup-close-button').removeClass('mapboxgl-popup-close-button').addClass('cus-mapboxgl-popup-close-button');
-
-        })()
+          $(".mapboxgl-popup-content")
+            .removeClass("mapboxgl-popup-content")
+            .addClass("cus-mapboxgl-popup-content");
+          $(".mapboxgl-popup-close-button")
+            .removeClass("mapboxgl-popup-close-button")
+            .addClass("cus-mapboxgl-popup-close-button");
+        })();
 
         const coordinates = e.features[0].geometry.coordinates.slice();
-        const details=JSON.parse(e.features[0].properties.details)
-        const points=JSON.parse(e.features[0].properties.points)
+        const details = JSON.parse(e.features[0].properties.details);
+        const points = JSON.parse(e.features[0].properties.points);
 
         // Render the React component into the DOM element
         const el: any = document.createElement("div");
         const root = createRoot(el);
         root.render(
-          <CustomPopup points={points} pathText={path.name} latitude={details.lat} longitude={details.lng} altitude={details.altitude} accuracy={details.accuracy} time={details.created}/> // Pass any props you need
+          <CustomPopup
+            points={points}
+            pathText={path.name}
+            latitude={details.lat}
+            longitude={details.lng}
+            altitude={details.altitude}
+            accuracy={details.accuracy}
+            time={details.created}
+          /> // Pass any props you need
         );
 
-        const popup = new mapboxgl.Popup({maxWidth:"320px"}).setLngLat(coordinates).setDOMContent(el).addTo(mapRef.current)
-    
+        const popup = new mapboxgl.Popup({ maxWidth: "320px" })
+          .setLngLat(coordinates)
+          .setDOMContent(el)
+          .addTo(mapRef.current);
       });
 
       mapRef.current.on("mouseenter", path.id, () => {
@@ -438,8 +491,16 @@ const Map = ({
         if (!features.length) {
           // If no features are returned, the click was outside the polygon
           mapRef.current.setPaintProperty(path.id, "fill-color", "#9a97f2"); // reset to initial color
-          mapRef.current.setPaintProperty(`outline_${path.id}`, "line-color", "#0401fc"); // reset outline to initial color
-          mapRef.current.setPaintProperty(`circles_${path.id}`, "circle-color", "#0401fc"); // yellow circles
+          mapRef.current.setPaintProperty(
+            `outline_${path.id}`,
+            "line-color",
+            "#0401fc"
+          ); // reset outline to initial color
+          mapRef.current.setPaintProperty(
+            `circles_${path.id}`,
+            "circle-color",
+            "#0401fc"
+          ); // yellow circles
           mapRef.current.setPaintProperty(
             `circles_${path.id}`,
             "circle-stroke-color",
@@ -457,7 +518,7 @@ const Map = ({
 
       // Create a custom HTML element (a simple text box)
       const textBox = document.createElement("div");
-      textBox.textContent = path.name // Set your desired text
+      textBox.textContent = path.name; // Set your desired text
       textBox.style.backgroundColor = "white"; // White background
       textBox.style.fontSize = "14px"; // White background
       textBox.style.border = "1px solid #ccc"; // Light grey border
@@ -476,8 +537,6 @@ const Map = ({
         .addTo(mapRef.current); // Add to the map
     });
   };
-
-
 
   const addMarkers = (data: any) => {
     const el = document.createElement("div");
