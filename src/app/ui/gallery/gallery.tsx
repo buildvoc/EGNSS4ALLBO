@@ -19,10 +19,7 @@ const Gallery = () => {
   const [user, setUser] = useState<any>();
   //local sotrage
   const [photoGallery, setPhotoGallery] = useState<any>([]);
-  const [selectedTaskPhotos, setSelectedTasksPhoto] = useLocalStorage(
-    "tasksPhotos",
-    []
-  );
+
 
   useEffect(() => {
     const initJQuery = async () => {

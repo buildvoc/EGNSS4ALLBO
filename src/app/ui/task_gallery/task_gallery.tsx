@@ -18,6 +18,8 @@ const TaskGallery = ({ taskPhotos, isUnassigned }: any) => {
     "tasksPhotos",
     []
   );
+  const [unassingedSelect, setUnassingedSelect] = useState();
+
   useEffect(() => {
     const initJQuery = async () => {
       const $ = await loadJQuery();
@@ -35,8 +37,8 @@ const TaskGallery = ({ taskPhotos, isUnassigned }: any) => {
     if (typeof window !== "undefined") {
       initJQuery();
     }
-    console.log('Photos---',photos)
-    setPhotos(taskPhotos)
+    const photosValue=taskPhotos
+    setPhotos(photosValue)
   }, [taskPhotos]);
 
   const handleRotate = (id: number, direction: string) => {
@@ -53,11 +55,39 @@ const TaskGallery = ({ taskPhotos, isUnassigned }: any) => {
       }
       return photo;
     });
-    setSelectedTasksPhoto(withAngleUpdate);
+    !isUnassigned && setSelectedTasksPhoto(withAngleUpdate);
     setPhotos(withAngleUpdate);
   };
 
   const handleClose = () => setShowModal({ isShow: false, index: -1 });
+
+  const removeAllCheck = () => {
+    const withCheckUpdate = photos.map((photo: any) => {
+        return { ...photo, check: false };
+    });
+
+    setPhotos(withCheckUpdate);
+  };
+
+  const selectAllCheck = () => {
+    const withCheckUpdate = photos.map((photo: any) => {
+        return { ...photo, check: true };
+    });
+
+    setPhotos(withCheckUpdate);
+  };
+
+  const checkIfPhotoSelect = ()=>{
+    let selectedPhotos = photos.some(
+      (item: any) => item.check == true
+    );
+    if (selectedPhotos) {
+      return true;
+    } else {
+      alert("No photo selected!");
+      return false;
+    }
+  }
 
   const handlePhotoCheckBox = (id: number) => {
     const withCheckUpdate = photos.map((photo: any) => {
@@ -69,7 +99,7 @@ const TaskGallery = ({ taskPhotos, isUnassigned }: any) => {
     });
 
     setPhotos(withCheckUpdate);
-    setSelectedTasksPhoto(withCheckUpdate);
+    !isUnassigned && setSelectedTasksPhoto(withCheckUpdate);
   };
   return (
     <div style={{ display: "flex", flexDirection: "column" }} id="task">
@@ -78,18 +108,18 @@ const TaskGallery = ({ taskPhotos, isUnassigned }: any) => {
       <div className="float-left w-100 unassigned-actions-row">
         {isUnassigned && (
           <div>
-            <a
-              href="#"
+            <button
               className="js_select_all_photos btn btn-outline-secondary text-capitalize mb-2 mr-lg-2 mr-2"
+              onClick={()=>{selectAllCheck()}}
             >
               Select All
-            </a>
-            <a
-              href="#"
+            </button>
+            <button
+              onClick={()=>{removeAllCheck()}}
               className="js_deselect_all_photos btn btn-outline-secondary text-capitalize mb-2 mr-lg-2 mr-2"
             >
               Cancel Selection
-            </a>
+            </button>
             <button
               type="button"
               className="js_photo_multi_delete btn btn-danger text-capitalize mb-2 "
@@ -103,6 +133,9 @@ const TaskGallery = ({ taskPhotos, isUnassigned }: any) => {
         <div>
           {isUnassigned && (
             <button
+              onClick={()=>{
+                checkIfPhotoSelect()&&window.open(`/choose_task`);
+              }}
               type="button"
               className="js_button_open_task_select btn btn-primary mb-2 ml-lg-auto mr-2"
             >
@@ -123,15 +156,8 @@ const TaskGallery = ({ taskPhotos, isUnassigned }: any) => {
             target="_blank"
             className="btn btn-primary text-capitalize mb-2 ml-lg-2"
             // href={`/pdf_preview?selected=${true}`}
-            onClick={() => {
-              let selectedPhotos = photos.some(
-                (item: any) => item.check == true
-              );
-              if (selectedPhotos) {
-                window.open(`/pdf_preview?selected=${true}`);
-              } else {
-                alert("No photo selected!");
-              }
+            onClick={()=>{
+              checkIfPhotoSelect()&&window.open(`/pdf_preview?selected=${true}`);
             }}
           >
             Export Selected To PDF
