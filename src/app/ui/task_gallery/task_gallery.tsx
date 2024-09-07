@@ -35,7 +35,9 @@ const TaskGallery = ({ taskPhotos, isUnassigned }: any) => {
     if (typeof window !== "undefined") {
       initJQuery();
     }
-  }, []);
+    console.log('Photos---',photos)
+    setPhotos(taskPhotos)
+  }, [taskPhotos]);
 
   const handleRotate = (id: number, direction: string) => {
     const withAngleUpdate = photos.map((photo: any) => {
@@ -71,7 +73,7 @@ const TaskGallery = ({ taskPhotos, isUnassigned }: any) => {
   };
   return (
     <div style={{ display: "flex", flexDirection: "column" }} id="task">
-      <DropdownMap map_tasks_array={taskPhotos} />
+      <DropdownMap map_tasks_array={taskPhotos} isUnassigned={isUnassigned} />
 
       <div className="float-left w-100 unassigned-actions-row">
         {isUnassigned && (

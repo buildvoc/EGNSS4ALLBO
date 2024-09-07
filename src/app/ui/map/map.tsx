@@ -17,6 +17,7 @@ const Map = ({
   style,
   className,
   setIsMapLoad,
+  isUnassigned,
   paths,
 }: any) => {
   //Refs
@@ -164,6 +165,7 @@ const toggleControl = new ToggleControl({
           });
 
           if (map_tasks_array.length == 1) {
+            console.log('Value---',isUnassigned)
             mapboxMap.fitBounds(bounds, {
               padding: { top: 60, bottom: 60, left: 20, right: 20 },
               duration: 0,
@@ -172,6 +174,7 @@ const toggleControl = new ToggleControl({
             });
             insertMarkers();
           } else {
+
             if (map_tasks_array.length > 0) {
               mapboxMap.fitBounds(bounds, {
                 padding: { top: 60, bottom: 60, left: 20, right: 20 },
@@ -284,13 +287,11 @@ const toggleControl = new ToggleControl({
 
               // handle zoom level
 
-              // Handle image change based on zoom level
-              mapboxMap.on("zoom", () => {
-                updateUnclusteredIcon(mapboxMap);
-              });
+   
 
               // inspect a cluster on click
               mapboxMap.on("click", "clusters", (e) => {
+                
                 const features: any = mapboxMap.queryRenderedFeatures(e.point, {
                   layers: ["clusters"],
                 });
@@ -550,7 +551,7 @@ const toggleControl = new ToggleControl({
 
   const updateUnclusteredIcon = (map: any) => {
     const zoomLevel = map.getZoom();
-    if (zoomLevel > 15) {
+    if (zoomLevel > 14.999) {
       insertMarkers();
       map.setLayoutProperty("unclustered-point", "visibility", "none");
     } else {

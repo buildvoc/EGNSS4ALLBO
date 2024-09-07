@@ -1,10 +1,10 @@
 "use client";
-import { useState} from "react";
+import { useState } from "react";
 import { FaRegMap } from "react-icons/fa6";
 import styles from "./map.module.css";
 import Map from "./map";
 
-const DropdownMap = ({ map_tasks_array,onClick }: any) => {
+const DropdownMap = ({ map_tasks_array, onClick,isUnassigned }: any) => {
   //States
   const [isMapVisible, setIsMapVisible] = useState(true);
 
@@ -20,7 +20,13 @@ const DropdownMap = ({ map_tasks_array,onClick }: any) => {
             isMapVisible ? styles.show : ""
           }`}
         >
-                  <Map style={{height:'50vh'}} map_tasks_array={map_tasks_array} onClick={onClick} className={styles.map_div}/>
+          <Map
+            style={{ height: "50vh" }}
+            map_tasks_array={map_tasks_array}
+            onClick={onClick}
+            isUnassigned={isUnassigned}
+            className={styles.map_div}
+          />
         </div>
         <div className="map_dropdown_btn" onClick={handleToggleMapVisibility}>
           {isMapVisible ? (
@@ -40,4 +46,4 @@ const DropdownMap = ({ map_tasks_array,onClick }: any) => {
   );
 };
 
-export default DropdownMap
+export default DropdownMap;

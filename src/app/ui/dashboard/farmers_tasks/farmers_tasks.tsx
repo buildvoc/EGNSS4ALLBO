@@ -344,7 +344,7 @@ const FarmersTasks = () => {
           href={`/unassigned_task`}
           className="btn btn-primary mb-2 d-block d-md-inline"
         >
-          SHOW UNASSIGNED PHOTOS
+          PHOTO GALLERY
         </a>
         <a
           href={`/user_paths?id=${user.id}`}
