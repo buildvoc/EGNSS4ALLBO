@@ -9,9 +9,9 @@ import { loadJQuery } from "@/utils/helpers";
 import { FaTimesCircle } from "react-icons/fa";
 import DropdownMap from "../map/dropdown_map";
 import useLocalStorage from "@/hooks/useLocalStorage";
+import { FaTrash } from "react-icons/fa";
 
-
-const TaskGallery = ({ taskPhotos }: any) => {
+const TaskGallery = ({ taskPhotos, isUnassigned }: any) => {
   const [photos, setPhotos] = useState(taskPhotos);
   const [showModal, setShowModal] = useState({ isShow: false, index: -1 });
   const [selectedTaskPhotos, setSelectedTasksPhoto] = useLocalStorage(
@@ -21,11 +21,13 @@ const TaskGallery = ({ taskPhotos }: any) => {
   useEffect(() => {
     const initJQuery = async () => {
       const $ = await loadJQuery();
-      $(document).on("click", ".js_open_ekf", async function () {
-        $('.js_hidden_ekf').fadeIn(200);
-      }).on('click', '.close_popup', function(){
-        $(this).parent().fadeOut(200);
-      })
+      $(document)
+        .on("click", ".js_open_ekf", async function () {
+          $(".js_hidden_ekf").fadeIn(200);
+        })
+        .on("click", ".close_popup", function () {
+          $(this).parent().fadeOut(200);
+        });
       return () => {
         $("click").off("click");
       };
@@ -65,38 +67,76 @@ const TaskGallery = ({ taskPhotos }: any) => {
     });
 
     setPhotos(withCheckUpdate);
-    setSelectedTasksPhoto(withCheckUpdate)
-
+    setSelectedTasksPhoto(withCheckUpdate);
   };
   return (
-    <div id="task">
+    <div style={{ display: "flex", flexDirection: "column" }} id="task">
       <DropdownMap map_tasks_array={taskPhotos} />
-      <a
-        id="task_pdf_export"
-        target="_blank"
-        className="btn btn-primary text-capitalize mb-2 d-block d-md-inline-block mt-2"
-        href={`/pdf_preview?selected=${false}`}
-      >
-        Export To PDF
-      </a>
-      <a
-        id="task_pdf_export_selected"
-        target="_blank"
-        className="btn btn-primary text-capitalize mb-2 ml-md-2 d-block d-md-inline-block mt-2"
-        // href={`/pdf_preview?selected=${true}`}
-        onClick={()=>{
-          let selectedPhotos = photos.some((item:any)=>item.check==true);
-          if(selectedPhotos)
-          {
-            window.open(`/pdf_preview?selected=${true}`)
-          }
-          else{
-            alert('No photo selected!');
-          }
-        }}
-      >
-        Export Selected To PDF
-      </a>
+
+      <div className="float-left w-100 unassigned-actions-row">
+        {isUnassigned && (
+          <div>
+            <a
+              href="#"
+              className="js_select_all_photos btn btn-outline-secondary text-capitalize mb-2 mr-lg-2 mr-2"
+            >
+              Select All
+            </a>
+            <a
+              href="#"
+              className="js_deselect_all_photos btn btn-outline-secondary text-capitalize mb-2 mr-lg-2 mr-2"
+            >
+              Cancel Selection
+            </a>
+            <button
+              type="button"
+              className="js_photo_multi_delete btn btn-danger text-capitalize mb-2 "
+            >
+              <FaTrash className="fas fa-trash mr-2" />
+              Delete Selected
+            </button>
+          </div>
+        )}
+
+        <div>
+          {isUnassigned && (
+            <button
+              type="button"
+              className="js_button_open_task_select btn btn-primary mb-2 ml-lg-auto mr-2"
+            >
+              Choose Task
+            </button>
+          )}
+
+          <a
+            id="task_pdf_export"
+            target="_blank"
+            className="btn btn-primary text-capitalize mb-2 ml-lg-2 mr-2"
+            href={`/pdf_preview?selected=${false}`}
+          >
+            Export To PDF
+          </a>
+          <a
+            id="task_pdf_export_selected"
+            target="_blank"
+            className="btn btn-primary text-capitalize mb-2 ml-lg-2"
+            // href={`/pdf_preview?selected=${true}`}
+            onClick={() => {
+              let selectedPhotos = photos.some(
+                (item: any) => item.check == true
+              );
+              if (selectedPhotos) {
+                window.open(`/pdf_preview?selected=${true}`);
+              } else {
+                alert("No photo selected!");
+              }
+            }}
+          >
+            Export Selected To PDF
+          </a>
+        </div>
+      </div>
+
       <div id="task_photos">
         {photos?.map(function (task: any, index: number) {
           const imageSrc = `data:image/jpeg;base64,${task?.photo?.photo}`;
@@ -133,11 +173,14 @@ const TaskGallery = ({ taskPhotos }: any) => {
                 className="thumbnail"
                 style={{ transform: `rotate(${task?.angle}deg)` }}
                 onClick={() => {
-                  setShowModal({
-                    isShow: true,
-                    index: index,
-                  });
-                  handlePhotoCheckBox(task?.photo?.digest);
+                  if (!isUnassigned) {
+                    setShowModal({
+                      isShow: true,
+                      index: index,
+                    });
+
+                    handlePhotoCheckBox(task?.photo?.digest);
+                  }
                 }}
               >
                 <img src={imageSrc} />
@@ -305,66 +348,71 @@ const TaskGallery = ({ taskPhotos }: any) => {
           );
         })}
       </div>
-        <div className="js_hidden_ekf" >
-    <span className="close_popup"><FaTimesCircle className="fas fa-times-circle" style={{background:'white'}} /></span>
-    <table>
-    <tr>
-      <td></td>
-      <td className="bold">GPS L1</td>
-      <td className="bold">GPS L5</td>
-      <td className="bold">GPS Iono Free (L1/L5)</td>
-      <td className="bold">Galileo E1</td>
-      <td className="bold">Galileo E5a</td>
-      <td className="bold">Galileo Iono Free (E1/E5a)</td>
-    </tr>
-    <tr>
-      <td className="bold">Latitude</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
-    <tr>
-      <td className="bold">Longitude</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
-    <tr>
-      <td className="bold">Altitude</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
-    <tr>
-      <td className="bold">Reference</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
-    <tr>
-      <td className="bold">Time</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
-    </table>
-  </div>
-  <Modal_
+      <div className="js_hidden_ekf">
+        <span className="close_popup">
+          <FaTimesCircle
+            className="fas fa-times-circle"
+            style={{ background: "white" }}
+          />
+        </span>
+        <table>
+          <tr>
+            <td></td>
+            <td className="bold">GPS L1</td>
+            <td className="bold">GPS L5</td>
+            <td className="bold">GPS Iono Free (L1/L5)</td>
+            <td className="bold">Galileo E1</td>
+            <td className="bold">Galileo E5a</td>
+            <td className="bold">Galileo Iono Free (E1/E5a)</td>
+          </tr>
+          <tr>
+            <td className="bold">Latitude</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td className="bold">Longitude</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td className="bold">Altitude</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td className="bold">Reference</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td className="bold">Time</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+        </table>
+      </div>
+      <Modal_
         modal={showModal}
         handleClose={handleClose}
         photos={photos}

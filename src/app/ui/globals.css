@@ -581,6 +581,19 @@ label,
 }
 /* ------------------For all----------------------------- */
 
+.btn-outline-secondary {
+  border-color: var(--primary);
+  color: var(--primary);
+  background-color: var(--light);
+}
+
+.btn-outline-secondary:hover, .btn-outline-secondary:focus,
+.btn-outline-secondary:not(:disabled):not(.disabled):active {
+  background-color: var(--lightHover);
+  color: var(--primaryHover);
+  border-color: var(--primaryHover);
+}
+
 .cus-mapboxgl-popup-close-button {
   position: absolute;
   right: 0;
@@ -611,8 +624,9 @@ label,
 
 .unassigned-actions-row {
   display: flex;
-  align-items: center;
+  justify-content: space-between;
   flex-direction: row;
+
 }
 
 .tt .tt_body {

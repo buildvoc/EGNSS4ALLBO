@@ -341,7 +341,7 @@ const FarmersTasks = () => {
       <h2>Tasks</h2>
       <div className="pt-2 pb-2 mb-3">
         <a
-          // href="{{ img_gallery }}"
+          href={`/unassigned_task`}
           className="btn btn-primary mb-2 d-block d-md-inline"
         >
           SHOW UNASSIGNED PHOTOS

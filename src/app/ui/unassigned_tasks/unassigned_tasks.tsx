@@ -1,0 +1,98 @@
+"use client";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import styles from "./unassigned_tasks.module.css";
+import useLocalStorage from "@/hooks/useLocalStorage";
+import { get_tasks_photos, update_status } from "@/api/api_client";
+import { FaChevronLeft } from "react-icons/fa";
+import TaskGallery from "../task_gallery/task_gallery";
+import { FaSignOutAlt } from "react-icons/fa";
+import { loadJQuery } from "@/utils/helpers";
+import { get_unassigned_photos,get_photo } from "@/api/api_client";
+import { get_auth_session } from "@/utils/auth_operations";
+import { authenticated_user } from "@/types/user_types";
+const UnassignedTasks = () => {
+  //Params
+  const searchParams = useSearchParams();
+  const taskId: any = searchParams.get("task_id");
+  //States
+  const [user, setUser] = useState<any>();
+  //local sotrage
+  const [unAssignedPhotos, setUnAssignedPhotos] = useState<any>([]);
+  const [selectedTaskPhotos, setSelectedTasksPhoto] = useLocalStorage(
+    "tasksPhotos",
+    []
+  );
+
+  useEffect(() => {
+    const initJQuery = async () => {
+      const $ = await loadJQuery();
+      var timer: any;
+      $(".tt").hover(
+        function () {
+          clearTimeout(timer);
+          var elem = this;
+          timer = setTimeout(function () {
+            $(elem).find(".tt_body").fadeIn(250);
+          }, 750);
+        },
+        function () {
+          $(this).find(".tt_body").hide();
+          clearTimeout(timer);
+        }
+      );
+
+      return () => {
+        $(".tt").off("hover");
+        $("click").off("click");
+      };
+    };
+    if (typeof window !== "undefined") {
+      initJQuery();
+    }
+
+    const fetchData = async () => {
+      var task_photo_data ;
+      var photos_array: any = [];
+      var map_unassigned_array = [];
+      const session: any = await get_auth_session();
+      let user: authenticated_user = await JSON.parse(session?.value);
+      console.log('User id ---',user.id);
+
+      let photos_ids = await get_unassigned_photos(user.id);
+
+      for (let id of photos_ids) {
+        const result = await get_photo(id);
+          photos_array.push(result)
+           task_photo_data = {
+            farmer_name: `${user.name} ${user.surname}`,
+            photo: photos_array,
+          };
+        // setUnAssignedPhotos(map_unassigned_array);
+      }
+      map_unassigned_array.push(task_photo_data)
+      console.log('Unassigned photo ---',map_unassigned_array);
+    };
+
+    fetchData()
+
+  }, []);
+
+  return (
+    <div className={styles.container}>
+      { <h2 style={{}}>Gallery of unassigned photos</h2>}
+      <div style={{marginTop:20,marginBottom:20}}>
+      <a
+        href="/dashboard"
+        className={`${styles.btn} primary  text-capitalize pl-0 mr-2`} 
+      >
+        <FaChevronLeft className={`${styles.chevron_style}  mr-2 `} />
+        BACK
+      </a>
+      </div>
+      <TaskGallery taskPhotos={unAssignedPhotos} isUnassigned={true}/>
+    </div>
+  );
+};
+
+export default UnassignedTasks;

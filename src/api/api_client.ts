@@ -85,6 +85,35 @@ export const get_tasks_photos = async (task_id: number, user_id: number) => {
   }
 };
 
+export const get_photo = async (photo_id: number) => {
+  "use server";
+
+  try {
+    const response = await fetch(
+      `${endpoint}comm_get_photo.php?photo_id=${photo_id}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    console.log(response)
+    let res: any = await response.json();
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+    if (res.photo) {
+      return res?.photo;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch the catalogue:", error);
+    return [];
+  }
+};
+
 export const update_status = async (
   task_id: number,
   status: string,
@@ -135,6 +164,35 @@ export const get_paths = async (user_id: number) => {
     }
     if (res.paths) {
       return res?.paths;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch the catalogue:", error);
+    return [];
+  }
+};
+
+export const get_unassigned_photos = async (user_id: number) => {
+  "use server";
+
+  try {
+    const response = await fetch(
+      `${endpoint}comm_unassigned.php?user_id=${user_id}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    let res: any = await response.json();
+    console.log("photos ---",res?.photos_ids)
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+    if (res.photos_ids) {
+      return res?.photos_ids;
     } else {
       return [];
     }
