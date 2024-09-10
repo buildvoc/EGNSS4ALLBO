@@ -66,8 +66,7 @@ const Task_detail = () => {
     <div className={styles.container}>
       {user?.name && <h2>{task?.farmer_name} task detail</h2>}
       <a
-        href="/dashboard"
-        className={`${styles.btn} primary  text-capitalize pl-0 mr-2`}
+href="/home"        className={`${styles.btn} primary  text-capitalize pl-0 mr-2`}
       >
         <FaChevronLeft className={`${styles.chevron_style}  mr-2`} />
         BACK

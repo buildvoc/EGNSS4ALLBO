@@ -67,8 +67,7 @@ const User_paths = () => {
   return (
     <div className={styles.container}>
       <a
-        href="/dashboard"
-        className={`${styles.btn} primary  text-capitalize pl-0 mr-2`}
+href="/home"        className={`${styles.btn} primary  text-capitalize pl-0 mr-2`}
       >
         <FaChevronLeft className={`${styles.chevron_style}  mr-2`} />
         BACK

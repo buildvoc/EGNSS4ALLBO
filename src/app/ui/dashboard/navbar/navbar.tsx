@@ -28,7 +28,7 @@ const Navbar_ = () => {
         variant="dark"
       >
         <Container aria-expanded="true" className={styles.nav_container} fluid>
-          <Link href="/dashboard" passHref>
+          <Link href="/home" passHref>
             <Navbar.Brand><img src="/logo_egnss4all_white.png"  
                             height="30"
             className="d-inline-block align-top"
@@ -44,7 +44,7 @@ const Navbar_ = () => {
           ></Navbar.Toggle>
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className={`me-auto ${styles.custom_me_auto}`} >
-                <Nav.Link href="/dashboard" className={styles.link}>Home</Nav.Link>
+                <Nav.Link href="/home" className={styles.link}>Home</Nav.Link>
                 <Nav.Link href="/about" className={styles.link}>Release Notes</Nav.Link>
             </Nav>
             <Nav className={`ms-auto ${styles.custom_me_auto}`} >
