@@ -85,7 +85,7 @@ const Gallery = () => {
 
   return (
     <div className={styles.container}>
-      { <h2 style={{}}>Gallery of unassigned photos</h2>}
+      { <h2 style={{}}>Photo Gallery</h2>}
       <div style={{marginTop:20,marginBottom:20}}>
       <a
         href="/dashboard"

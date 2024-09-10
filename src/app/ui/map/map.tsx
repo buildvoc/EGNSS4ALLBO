@@ -18,7 +18,8 @@ const Map = ({
   className,
   setIsMapLoad,
   isUnassigned,
-  paths,
+  isSelected,
+  paths
 }: any) => {
   //Refs
   const mapNode = useRef<any | HTMLDivElement>(null);
@@ -163,9 +164,14 @@ const toggleControl = new ToggleControl({
           map_tasks_array.forEach((task: any) => {
             addMarkers(task);
           });
-
+          if(isSelected)
+          {
+            insertMarkers()
+          }
           if (map_tasks_array.length == 1) {
             console.log('Value---',isUnassigned)
+
+
             mapboxMap.fitBounds(bounds, {
               padding: { top: 60, bottom: 60, left: 20, right: 20 },
               duration: 0,

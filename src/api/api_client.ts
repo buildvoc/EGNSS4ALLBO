@@ -22,7 +22,7 @@ export const login = async (event: any) => {
   }
   if (res.user) {
     cookies().set("auth", JSON.stringify(res.user), { secure: false });
-    redirect("/dashboard");
+    redirect("/home");
   } else {
     return { error: "Login credentials don't match!" };
   }

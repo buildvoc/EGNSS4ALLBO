@@ -9,6 +9,8 @@ import { loadJQuery } from "@/utils/helpers";
 import { FaTimesCircle } from "react-icons/fa";
 import DropdownMap from "../map/dropdown_map";
 import useLocalStorage from "@/hooks/useLocalStorage";
+import Link from "next/link";
+
 import { FaTrash } from "react-icons/fa";
 
 const TaskGallery = ({ taskPhotos, isUnassigned }: any) => {
@@ -37,8 +39,8 @@ const TaskGallery = ({ taskPhotos, isUnassigned }: any) => {
     if (typeof window !== "undefined") {
       initJQuery();
     }
-    const photosValue=taskPhotos
-    setPhotos(photosValue)
+    const photosValue = taskPhotos;
+    setPhotos(photosValue);
   }, [taskPhotos]);
 
   const handleRotate = (id: number, direction: string) => {
@@ -63,7 +65,7 @@ const TaskGallery = ({ taskPhotos, isUnassigned }: any) => {
 
   const removeAllCheck = () => {
     const withCheckUpdate = photos.map((photo: any) => {
-        return { ...photo, check: false };
+      return { ...photo, check: false };
     });
 
     setPhotos(withCheckUpdate);
@@ -71,23 +73,44 @@ const TaskGallery = ({ taskPhotos, isUnassigned }: any) => {
 
   const selectAllCheck = () => {
     const withCheckUpdate = photos.map((photo: any) => {
-        return { ...photo, check: true };
+      return { ...photo, check: true };
     });
 
     setPhotos(withCheckUpdate);
   };
 
-  const checkIfPhotoSelect = ()=>{
-    let selectedPhotos = photos.some(
-      (item: any) => item.check == true
-    );
+  const checkIfPhotoSelect = () => {
+    let selectedPhotos = photos.some((item: any) => item.check == true);
+    if (selectedPhotos) {
+      return true;
+    } else {
+      // alert("No photo selected!");
+      return false;
+    }
+  };
+  const checkIfPhotoSelectPdf = () => {
+    let selectedPhotos = photos.some((item: any) => item.check == true);
     if (selectedPhotos) {
       return true;
     } else {
       alert("No photo selected!");
       return false;
     }
-  }
+  };
+
+  const selectedIdArray: any = () => {
+      let selectedId = photos.map((photo: any) => {
+        if (photo.check) {
+          return photo.id;
+        }
+        return null;
+      });
+      selectedId = selectedId.filter((id: any) => id != null);
+      console.log("SelectedIds---", selectedId);
+
+      return selectedId.join(",");
+      // checkIfPhotoSelect()&&window.open(`/choose_task`);
+  };
 
   const handlePhotoCheckBox = (id: number) => {
     const withCheckUpdate = photos.map((photo: any) => {
@@ -103,19 +126,23 @@ const TaskGallery = ({ taskPhotos, isUnassigned }: any) => {
   };
   return (
     <div style={{ display: "flex", flexDirection: "column" }} id="task">
-      <DropdownMap map_tasks_array={taskPhotos} isUnassigned={isUnassigned} />
+      <DropdownMap map_tasks_array={taskPhotos} isUnassigned={isUnassigned}  />
 
       <div className="float-left w-100 unassigned-actions-row">
         {isUnassigned && (
           <div>
             <button
               className="js_select_all_photos btn btn-outline-secondary text-capitalize mb-2 mr-lg-2 mr-2"
-              onClick={()=>{selectAllCheck()}}
+              onClick={() => {
+                selectAllCheck();
+              }}
             >
               Select All
             </button>
             <button
-              onClick={()=>{removeAllCheck()}}
+              onClick={() => {
+                removeAllCheck();
+              }}
               className="js_deselect_all_photos btn btn-outline-secondary text-capitalize mb-2 mr-lg-2 mr-2"
             >
               Cancel Selection
@@ -131,23 +158,32 @@ const TaskGallery = ({ taskPhotos, isUnassigned }: any) => {
         )}
 
         <div>
-          {isUnassigned && (
-            <button
-              onClick={()=>{
-                checkIfPhotoSelect()&&window.open(`/choose_task`);
+          {isUnassigned&&checkIfPhotoSelect() && (
+            <Link
+              href={{
+                pathname: "/photo_gallery_",
+                query: { ids: selectedIdArray() }
+                
+                // Convert array to comma-separated string
               }}
               type="button"
               className="js_button_open_task_select btn btn-primary mb-2 ml-lg-auto mr-2"
             >
               Choose Task
-            </button>
+            </Link>
           )}
 
           <a
             id="task_pdf_export"
             target="_blank"
             className="btn btn-primary text-capitalize mb-2 ml-lg-2 mr-2"
-            href={`/pdf_preview?selected=${false}`}
+            onClick={() => {
+              if(!isUnassigned)
+                {
+                  checkIfPhotoSelectPdf() &&
+                  window.open(`/pdf_preview?selected=${false}`);
+                }
+            }}
           >
             Export To PDF
           </a>
@@ -156,8 +192,13 @@ const TaskGallery = ({ taskPhotos, isUnassigned }: any) => {
             target="_blank"
             className="btn btn-primary text-capitalize mb-2 ml-lg-2"
             // href={`/pdf_preview?selected=${true}`}
-            onClick={()=>{
-              checkIfPhotoSelect()&&window.open(`/pdf_preview?selected=${true}`);
+            onClick={() => {
+              if(!isUnassigned)
+              {
+                checkIfPhotoSelectPdf() &&
+                window.open(`/pdf_preview?selected=${true}`);
+              }
+
             }}
           >
             Export Selected To PDF

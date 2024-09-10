@@ -2,6 +2,10 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import Navbar from "../ui/dashboard/navbar/navbar";
 import styles from "../ui/dashboard/dashboard.module.css";
+import type { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "Paths"
+}; 
 function get_auth_session() {
     const cookiesStore = cookies();
     const session = cookiesStore.get('auth');

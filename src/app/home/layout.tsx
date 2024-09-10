@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import Navbar from "../ui/dashboard/navbar/navbar";
@@ -7,6 +9,9 @@ function get_auth_session() {
     const session = cookiesStore.get('auth');
     return session;
   }
+  export const metadata: Metadata = {
+    title: "Task list"
+  }; 
 const Layout = ({ children }:any) => {
   const session = get_auth_session();
   if (!session) {

@@ -11,10 +11,11 @@ import DropdownMap from "../map/dropdown_map";
 const AssignTask = () => {
   //Params
   const searchParams = useSearchParams();
-  const taskId: any = searchParams.get("task_id");
-  const [photos, setPhotos] = useState();
+  const ids: any = searchParams.get("ids");
+  const [photos, setPhotos] = useState<any>([]);
 
   useEffect(() => {
+    const selectedIdsArray = ids ? ids.split(',') : [];
     const initJQuery = async () => {
       const $ = await loadJQuery();
       var timer: any;
@@ -46,24 +47,24 @@ const AssignTask = () => {
       var map_unassigned_array = [];
       const session: any = await get_auth_session();
       let user: authenticated_user = await JSON.parse(session?.value);
-      console.log("User id ---", user.id);
+      console.log("Ids---",selectedIdsArray)
 
-      let photos_ids = await get_unassigned_photos(user.id);
+ 
 
-      for (let id of photos_ids) {
+      for (let id of selectedIdsArray) {
         const result = await get_photo(id);
         // photos_array.push(result)
         task_photo_data = {
           id: id,
-
           farmer_name: `${user.name} ${user.surname}`,
           photo: result,
-          location: [result?.lng, result?.lat],
+          location: [result?.lng, result?.lat]
         };
 
         // setUnAssignedPhotos(map_unassigned_array);
         map_unassigned_array.push(task_photo_data);
       }
+      setPhotos(map_unassigned_array)
       console.log("Unassigned photo ---", map_unassigned_array);
     };
 
@@ -72,7 +73,7 @@ const AssignTask = () => {
 
   return (
     <div className={styles.container}>
-      {<h2 style={{}}>Gallery of unassigned photos</h2>}
+      {<h2 style={{}}>Photo Gallery</h2>}
       <div style={{ marginTop: 20, marginBottom: 20 }}>
         <a
           href="/photo_gallery"
@@ -82,7 +83,9 @@ const AssignTask = () => {
           BACK
         </a>
       </div>
-      <DropdownMap map_tasks_array={[]} />
+      <DropdownMap map_tasks_array={photos}  isSelected={true} />
+      <div style={{ display: "flex", flexDirection: "column" }} id="task">
+
       <div id="task_photos">
         {photos?.map(function (task: any, index: number) {
           const imageSrc = `data:image/jpeg;base64,${task?.photo?.photo}`;
@@ -93,7 +96,7 @@ const AssignTask = () => {
                 data-field="status"
                 data-fieldtype="new"
                 type="checkbox"
-                checked={task?.check}
+                checked={true}
               />
               <label
                 className="thumbnail"
@@ -259,6 +262,24 @@ const AssignTask = () => {
         })}
       </div>
     </div>
+    {
+      photos.length>0&&(
+        <div className="js_assign_photos_task_select">
+        <div>
+          <select className="form-select" name="task_id" id="js_assign_photo_task_id_select">
+              <option value="{{ task.id }}">value</option>
+              <option value="{{ task.id }}">value</option>
+              <option value="{{ task.id }}">value</option>
+              <option value="{{ task.id }}">value</option>
+          </select>
+          <button type="button" className="mt-2 mb-2 btn btn-primary js_button_confirm_task_select">ASSIGN</button>
+        </div>
+      </div>
+      )
+    }
+
+    </div>
+
   );
 };
 

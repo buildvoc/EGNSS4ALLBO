@@ -4,7 +4,7 @@ import { FaRegMap } from "react-icons/fa6";
 import styles from "./map.module.css";
 import Map from "./map";
 
-const DropdownMap = ({ map_tasks_array, onClick,isUnassigned }: any) => {
+const DropdownMap = ({ map_tasks_array, onClick,isUnassigned,isSelected }: any) => {
   //States
   const [isMapVisible, setIsMapVisible] = useState(true);
 
@@ -26,6 +26,7 @@ const DropdownMap = ({ map_tasks_array, onClick,isUnassigned }: any) => {
             onClick={onClick}
             isUnassigned={isUnassigned}
             className={styles.map_div}
+            isSelected={isSelected}
           />
         </div>
         <div className="map_dropdown_btn" onClick={handleToggleMapVisibility}>
