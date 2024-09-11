@@ -99,17 +99,17 @@ const TaskGallery = ({ taskPhotos, isUnassigned }: any) => {
   };
 
   const selectedIdArray: any = () => {
-      let selectedId = photos.map((photo: any) => {
-        if (photo.check) {
-          return photo.id;
-        }
-        return null;
-      });
-      selectedId = selectedId.filter((id: any) => id != null);
-      console.log("SelectedIds---", selectedId);
+    let selectedId = photos.map((photo: any) => {
+      if (photo.check) {
+        return photo.id;
+      }
+      return null;
+    });
+    selectedId = selectedId.filter((id: any) => id != null);
+    console.log("SelectedIds---", selectedId);
 
-      return selectedId.join(",");
-      // checkIfPhotoSelect()&&window.open(`/choose_task`);
+    return selectedId.join(",");
+    // checkIfPhotoSelect()&&window.open(`/choose_task`);
   };
 
   const handlePhotoCheckBox = (id: number) => {
@@ -126,7 +126,7 @@ const TaskGallery = ({ taskPhotos, isUnassigned }: any) => {
   };
   return (
     <div style={{ display: "flex", flexDirection: "column" }} id="task">
-      <DropdownMap map_tasks_array={taskPhotos} isUnassigned={isUnassigned}  />
+      <DropdownMap map_tasks_array={taskPhotos} isUnassigned={isUnassigned} />
 
       <div className="float-left w-100 unassigned-actions-row">
         {isUnassigned && (
@@ -158,12 +158,12 @@ const TaskGallery = ({ taskPhotos, isUnassigned }: any) => {
         )}
 
         <div>
-          {isUnassigned&&checkIfPhotoSelect() && (
+          {isUnassigned && checkIfPhotoSelect() && (
             <Link
               href={{
                 pathname: "/photo_gallery_",
-                query: { ids: selectedIdArray() }
-                
+                query: { ids: selectedIdArray() },
+
                 // Convert array to comma-separated string
               }}
               type="button"
@@ -178,11 +178,7 @@ const TaskGallery = ({ taskPhotos, isUnassigned }: any) => {
             target="_blank"
             className="btn btn-primary text-capitalize mb-2 ml-lg-2 mr-2"
             onClick={() => {
-              if(!isUnassigned)
-                {
-                  checkIfPhotoSelectPdf() &&
-                  window.open(`/pdf_preview?selected=${false}`);
-                }
+              window.open(`/pdf_preview?selected=${false}`);
             }}
           >
             Export To PDF
@@ -193,12 +189,8 @@ const TaskGallery = ({ taskPhotos, isUnassigned }: any) => {
             className="btn btn-primary text-capitalize mb-2 ml-lg-2"
             // href={`/pdf_preview?selected=${true}`}
             onClick={() => {
-              if(!isUnassigned)
-              {
-                checkIfPhotoSelectPdf() &&
+              checkIfPhotoSelectPdf() &&
                 window.open(`/pdf_preview?selected=${true}`);
-              }
-
             }}
           >
             Export Selected To PDF
@@ -214,6 +206,15 @@ const TaskGallery = ({ taskPhotos, isUnassigned }: any) => {
             <div className="thumb" key={task?.photo?.digest}>
               <div className="top_action_bar">
                 <div className="js_photo_rotate">
+                  {isUnassigned && (
+                    <div
+                      className="icon_cont"
+                      style={{ color: "rgb(50, 173, 230)" }}
+                    >
+                      <FaTrash className="fas fa-trash " />
+                    </div>
+                  )}
+
                   <div
                     className="icon_cont js_photo_rotate_left"
                     onClick={() => handleRotate(task?.photo?.digest, "left")}
@@ -242,14 +243,12 @@ const TaskGallery = ({ taskPhotos, isUnassigned }: any) => {
                 className="thumbnail"
                 style={{ transform: `rotate(${task?.angle}deg)` }}
                 onClick={() => {
-                  if (!isUnassigned) {
-                    setShowModal({
-                      isShow: true,
-                      index: index,
-                    });
+                  setShowModal({
+                    isShow: true,
+                    index: index,
+                  });
 
-                    handlePhotoCheckBox(task?.photo?.digest);
-                  }
+                  handlePhotoCheckBox(task?.photo?.digest);
                 }}
               >
                 <img src={imageSrc} />

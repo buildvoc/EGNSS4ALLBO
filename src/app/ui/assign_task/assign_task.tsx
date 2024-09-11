@@ -7,12 +7,34 @@ import { loadJQuery } from "@/utils/helpers";
 import { get_unassigned_photos, get_photo } from "@/api/api_client";
 import { get_auth_session } from "@/utils/auth_operations";
 import { authenticated_user } from "@/types/user_types";
+import useLocalStorage from "@/hooks/useLocalStorage";
+import Modal_ from "../modal/modal";
 import DropdownMap from "../map/dropdown_map";
-const AssignTask = () => {
+const AssignTask = ({isUnassigned}:any) => {
   //Params
   const searchParams = useSearchParams();
   const ids: any = searchParams.get("ids");
   const [photos, setPhotos] = useState<any>([]);
+  const [showModal, setShowModal] = useState({ isShow: false, index: -1 });
+  const [selectedTaskPhotos, setSelectedTasksPhoto] = useLocalStorage(
+    "tasksPhotos",
+    []
+  );
+
+  const handleClose = () => setShowModal({ isShow: false, index: -1 });
+
+  const handlePhotoCheckBox = (id: number) => {
+    const withCheckUpdate = photos.map((photo: any) => {
+      if (photo?.photo?.digest === id) {
+        const check = !photo.hasOwnProperty("check") ? true : !photo?.check;
+        return { ...photo, check: check };
+      }
+      return photo;
+    });
+
+    setPhotos(withCheckUpdate);
+    !isUnassigned && setSelectedTasksPhoto(withCheckUpdate);
+  };
 
   useEffect(() => {
     const selectedIdsArray = ids ? ids.split(',') : [];
@@ -101,6 +123,14 @@ const AssignTask = () => {
               <label
                 className="thumbnail"
                 style={{ transform: `rotate(${task?.angle}deg)` }}
+                onClick={() => {
+                  setShowModal({
+                    isShow: true,
+                    index: index,
+                  });
+
+                  handlePhotoCheckBox(task?.photo?.digest);
+                }}
               >
                 <img src={imageSrc} />
               </label>
@@ -277,7 +307,12 @@ const AssignTask = () => {
       </div>
       )
     }
-
+      <Modal_
+        modal={showModal}
+        handleClose={handleClose}
+        photos={photos}
+        setModal={setShowModal}
+      />
     </div>
 
   );

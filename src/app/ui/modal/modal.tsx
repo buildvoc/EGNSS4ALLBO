@@ -4,6 +4,7 @@ import { FaSync } from "react-icons/fa";
 import { FaArrowLeft } from "react-icons/fa";
 import { FaArrowRight } from "react-icons/fa";
 import { cnvrtImgUrl } from "@/utils/helpers";
+import useLocalStorage from "@/hooks/useLocalStorage";
 
 const Modal_ = ({
   modal,
@@ -15,7 +16,10 @@ const Modal_ = ({
 }: any) => {
   const imageSrc = cnvrtImgUrl(photos[modal.index]?.photo?.photo);
   const [image, setImage] = useState(imageSrc);
-
+  const [selectedTaskPhotos, setSelectedTasksPhoto] = useLocalStorage(
+    "tasksPhotos",
+    []
+  );
   useEffect(() => {
     setImage(imageSrc);
   }, [imageSrc]);
@@ -71,7 +75,13 @@ const Modal_ = ({
         </div>
       </Modal.Header>
       <Modal.Body className="modal_body">
-        <a href={`./photo_detail?index=${modal?.index}`} target="_blank">
+        <a onClick={()=>{
+          setSelectedTasksPhoto([])
+          const selectedArray=[photos[modal?.index]]
+          setSelectedTasksPhoto(selectedArray)
+
+          window.open(`./photo_detail?index=${modal?.index}`)
+        }} target="_blank">
           <img
             src={image}
             className="img-fluid"
@@ -99,31 +109,38 @@ const Modal_ = ({
           </button>
 
           <div style={{ width: "20%" }} />
-          <div
-            className="js_photo_rotate_left"
-            data-pht_id="image-gallery-image"
-            onClick={() => {
-              return rotateLeft(photos[modal.index].photo.digest, "left");
-            }}
-          >
-            {" "}
-            <i>
-              <FaSync className="fas" />
-            </i>
-            Rotate Left
-          </div>
-          <div
-            className="js_photo_rotate_right"
-            data-pht_id="image-gallery-image"
-            onClick={() => {
-              return rotateRight(photos[modal.index].photo.digest, "right");
-            }}
-          >
-            <i>
-              <FaSync className="fas" />
-            </i>
-            Rotate Right
-          </div>
+          {
+            rotateLeft && (          <div
+              className="js_photo_rotate_left"
+              data-pht_id="image-gallery-image"
+              onClick={() => {
+                return rotateLeft(photos[modal.index].photo.digest, "left");
+              }}
+            >
+              {" "}
+              <i>
+                <FaSync className="fas" />
+              </i>
+              Rotate Left
+            </div>)
+          }
+
+          {
+            rotateRight && (
+              <div
+              className="js_photo_rotate_right"
+              data-pht_id="image-gallery-image"
+              onClick={() => {
+                return rotateRight(photos[modal.index].photo.digest, "right");
+              }}
+            >
+              <i>
+                <FaSync className="fas" />
+              </i>
+              Rotate Right
+            </div>
+            )
+          }
           <div style={{ width: "20%" }} />
           <button
             type="button"
