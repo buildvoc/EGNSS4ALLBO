@@ -13,15 +13,11 @@ import {
 } from "@react-pdf/renderer";
 import { compressImageFromUrl } from "@/utils/auth_operations";
 import useLocalStorage from "@/hooks/useLocalStorage";
-import { useSearchParams } from "next/navigation";
 import mapboxgl from "mapbox-gl";
 import { createRoot } from "react-dom/client";
 import html2canvas from "html2canvas";
 import moment from "moment";
-import { pages } from "next/dist/build/templates/app-page";
 import TaskPhoto from "../dashboard/farmers_tasks/task_photo/task_photo";
-import imageCompression from "browser-image-compression";
-import { base64StringToBlob, blobToBase64String } from "blob-util";
 import { useRouter } from "next/navigation";
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN as string;
@@ -162,7 +158,12 @@ const styles = StyleSheet.create({
 });
 
 // Page component
-const PdfPage = ({ photos, exportedPages, totalPages }: any) => {
+const PdfPage = ({
+  photos,
+  exportedPages,
+  totalPages,
+  isPhotoGalelry,
+}: any) => {
   const formattedDate = moment().format("YYYY-MM-DD HH:mm:ss");
 
   return (
@@ -174,69 +175,73 @@ const PdfPage = ({ photos, exportedPages, totalPages }: any) => {
         <View style={styles.subtitle_container}>
           <Text>
             {" "}
-            {photos[0]?.farmer_name} - task detail {photos[0]?.task_name}{" "}
+            {photos[0]?.farmer_name} {isPhotoGalelry!='true' &&(' - task detail')} {photos[0]?.task_name}{" "}
           </Text>
         </View>
       </View>
 
       {/* PDF Content */}
+
       <View style={styles.content}>
         <View style={styles.second_header}>
           <Text>Date of export: {formattedDate}</Text>
           <Text>
-            Exported {exportedPages} ouf of {totalPages} photos
+            Exported {exportedPages} out of {totalPages} photos
           </Text>
         </View>
 
         <Text style={styles.task_title}>
-          farmer farmer - task detail webserver-assign-photo-task
+        {photos[0]?.farmer_name} {isPhotoGalelry!='true' && ('- task detail')} { photos[0]?.task_name}{" "}
         </Text>
-        <View style={styles.task_list_container}>
-          <View style={styles.task_container}>
-            <Text style={styles.task_heading}>Status</Text>
-            <Text style={styles.task_value}>{photos[0]?.status}</Text>
+        {isPhotoGalelry == "false" && (
+          <View style={styles.task_list_container}>
+            <View style={styles.task_container}>
+              <Text style={styles.task_heading}>Status</Text>
+              <Text style={styles.task_value}>{photos[0]?.status}</Text>
+            </View>
+            <View style={styles.task_container}>
+              <Text style={styles.task_heading}>Verified</Text>
+              <Text style={styles.task_value}></Text>
+            </View>
+            <View style={styles.task_container}>
+              <Text style={styles.task_heading}>Purpose</Text>
+              <Text style={styles.task_value}></Text>
+            </View>
+            <View style={styles.task_container}>
+              <Text style={styles.task_heading}>Name</Text>
+              <Text style={styles.task_value}>{photos[0]?.task_name}</Text>
+            </View>
+            <View style={styles.task_container}>
+              <Text style={styles.task_heading}>Note</Text>
+              <Text style={styles.task_value}>{photos[0]?.note}</Text>
+            </View>
+            <View style={styles.task_container}>
+              <Text style={styles.task_heading}>Guidelines</Text>
+              <Text style={styles.task_value}>{photos[0]?.text}</Text>
+            </View>
+            <View style={styles.task_container}>
+              <Text style={styles.task_heading}>Reopen reason</Text>
+              <Text style={styles.task_value}></Text>
+            </View>
+            <View style={styles.task_container}>
+              <Text style={styles.task_heading}>Date created</Text>
+              <Text style={styles.task_value}>
+                {photos[0]?.date_created.split(" ")[0]}
+              </Text>
+            </View>
+            <View style={styles.task_container}>
+              <Text style={styles.task_heading}>Due date</Text>
+              <Text style={styles.task_value}>
+                {photos[0]?.task_due_date.split(" ")[0]}
+              </Text>
+            </View>
           </View>
-          <View style={styles.task_container}>
-            <Text style={styles.task_heading}>Verified</Text>
-            <Text style={styles.task_value}></Text>
-          </View>
-          <View style={styles.task_container}>
-            <Text style={styles.task_heading}>Purpose</Text>
-            <Text style={styles.task_value}></Text>
-          </View>
-          <View style={styles.task_container}>
-            <Text style={styles.task_heading}>Name</Text>
-            <Text style={styles.task_value}>{photos[0]?.task_name}</Text>
-          </View>
-          <View style={styles.task_container}>
-            <Text style={styles.task_heading}>Note</Text>
-            <Text style={styles.task_value}>{photos[0]?.note}</Text>
-          </View>
-          <View style={styles.task_container}>
-            <Text style={styles.task_heading}>Guidelines</Text>
-            <Text style={styles.task_value}>{photos[0]?.text}</Text>
-          </View>
-          <View style={styles.task_container}>
-            <Text style={styles.task_heading}>Reopen reason</Text>
-            <Text style={styles.task_value}></Text>
-          </View>
-          <View style={styles.task_container}>
-            <Text style={styles.task_heading}>Date created</Text>
-            <Text style={styles.task_value}>
-              {photos[0]?.date_created.split(" ")[0]}
-            </Text>
-          </View>
-          <View style={styles.task_container}>
-            <Text style={styles.task_heading}>Due date</Text>
-            <Text style={styles.task_value}>
-              {photos[0]?.task_due_date.split(" ")[0]}
-            </Text>
-          </View>
-        </View>
-        {
-          photos[0]?.img &&( <Image src={photos[0]?.img} style={styles.task_image} />)
-        }
-       
+        )}
+
+        {photos[0]?.img && (
+          <Image src={photos[0]?.img} style={styles.task_image} />
+        )}
+
         <View style={styles.bottom_container}>
           <Image src={photos[0]?.mapImg} style={styles.map_image} />
           <View style={styles.photo_details}>
@@ -397,7 +402,14 @@ interface CompressOptions {
 //   });
 // };
 
-const ClientPdfRenderer = ({ selected, setIsGenerated, length }: any) => {
+const ClientPdfRenderer = ({
+  selected,
+  setIsGenerated,
+  length,
+  isPhotoGallery,
+  data,
+  totalPages
+}: any) => {
   const [pdfInstance, updatePdfInstance] = usePDF();
   const [selectedTaskPhotos, setSelectedTasksPhoto] = useLocalStorage(
     "tasksPhotos",
@@ -408,7 +420,11 @@ const ClientPdfRenderer = ({ selected, setIsGenerated, length }: any) => {
   const processPhotos = async () => {
     let photoData =
       selected == "true"
-        ? selectedTaskPhotos.filter((photo: any) => photo.check)
+        ? isPhotoGallery == "true"
+          ? data
+          : selectedTaskPhotos.filter((photo: any) => photo.check)
+        : isPhotoGallery == "true"
+        ? data
         : selectedTaskPhotos;
 
     // Compress images for each photo
@@ -417,11 +433,14 @@ const ClientPdfRenderer = ({ selected, setIsGenerated, length }: any) => {
         var img = null;
         if (photo.photo.photo) {
           //Compress task image
-          const compressedImage = await compressImageFromUrl(photo.photo.photo, {
-            resize: 300,
-            rotate: 90,
-            quality: 80,
-          });
+          const compressedImage = await compressImageFromUrl(
+            photo.photo.photo,
+            {
+              resize: 300,
+              rotate: 90,
+              quality: 80,
+            }
+          );
           img = `data:image/jpeg;base64,${compressedImage}`;
         }
 
@@ -433,14 +452,13 @@ const ClientPdfRenderer = ({ selected, setIsGenerated, length }: any) => {
         });
         const mapImg = `data:image/jpeg;base64,${compressedMapImg}`;
 
- 
         //Take coordinate and fetch image from map canvas with comporession
 
         return getContent(
           { ...photo, img, mapImg },
           index,
           photoData.length,
-          selectedTaskPhotos.length
+          isPhotoGallery == "true" ? totalPages : selectedTaskPhotos.length
         );
       })
     );
@@ -462,6 +480,7 @@ const ClientPdfRenderer = ({ selected, setIsGenerated, length }: any) => {
         photos={photoArray}
         exportedPages={exportedPages}
         totalPages={totalPages}
+        isPhotoGalelry={isPhotoGallery}
       />
     );
   }
@@ -522,16 +541,16 @@ const ClientPdfRenderer = ({ selected, setIsGenerated, length }: any) => {
     return imgData.replace(/^data:image\/\w+;base64,/, "");
   };
 
-
-
-
   useEffect(() => {
     const createPdfDocument = async () => {
       const pages = await processPhotos();
 
       let name = `${moment().format("YYYY.M.D")}_${
-        selectedTaskPhotos[0].farmer_name
-      } - task detail ${selectedTaskPhotos[0]?.task_name}`;
+        isPhotoGallery == "true"
+          ? data[0].farmer_name
+          : selectedTaskPhotos[0].farmer_name
+      } ${isPhotoGallery=="false"?('- task detail ' ) + selectedTaskPhotos[0]?.task_name:''
+      }  `;
 
       const pdfDocument = (
         <Document title={name + ".pdf"}>
@@ -569,8 +588,11 @@ const ClientPdfRenderer = ({ selected, setIsGenerated, length }: any) => {
         const formData = new FormData();
 
         let formatedName = `${moment().format("YYYY.M.D")}_${
-          selectedTaskPhotos[0].farmer_name
-        } - task detail ${selectedTaskPhotos[0]?.task_name}`;
+          isPhotoGallery == "true"
+            ? data[0].farmer_name
+            : selectedTaskPhotos[0].farmer_name
+        } ${isPhotoGallery=="false" ? ('- task detail ') + selectedTaskPhotos[0]?.task_name
+        :''} `;
         let name: string = `${formatedName}.pdf`;
         formData.append("file", blob, name);
 
@@ -604,11 +626,13 @@ const ClientPdfRenderer = ({ selected, setIsGenerated, length }: any) => {
 
   return (
     <>
-      <div className="pdf_loader">
-        <div className="inner_cont">
-          <p>{`${length} out of ${length}`}</p>
-          <img src="/tail-spin.svg" className="my-3" alt="spinner_loader" />
-          <p>Wait</p>
+      <div style={{ backgroundColor: "#fffffffc", height: "100vh" }}>
+        <div className="pdf_loader">
+          <div className="inner_cont">
+            <p>{`${length} out of ${length}`}</p>
+            <img src="/tail-spin.svg" className="my-3" alt="spinner_loader" />
+            <p>Wait</p>
+          </div>
         </div>
       </div>
     </>

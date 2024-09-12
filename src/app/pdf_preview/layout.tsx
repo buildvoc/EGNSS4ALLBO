@@ -15,8 +15,8 @@ const Layout = ({ children }:any) => {
   }
 
   return (
-    <div className={styles.container}>
-      <div className={styles.content}>
+    <div className={styles.container} >
+      <div className={styles.content} style={{backgroundColor:'white'}}>
         {children}
       </div>
     </div>

@@ -178,7 +178,11 @@ const TaskGallery = ({ taskPhotos, isUnassigned }: any) => {
             target="_blank"
             className="btn btn-primary text-capitalize mb-2 ml-lg-2 mr-2"
             onClick={() => {
-              window.open(`/pdf_preview?selected=${false}`);
+              if(photos.length>0)
+              {
+                window.open(`/pdf_preview?selected=${false}&photo_gallery=${isUnassigned?true:false}&length=${photos.length}`);
+
+              }
             }}
           >
             Export To PDF
@@ -190,7 +194,7 @@ const TaskGallery = ({ taskPhotos, isUnassigned }: any) => {
             // href={`/pdf_preview?selected=${true}`}
             onClick={() => {
               checkIfPhotoSelectPdf() &&
-                window.open(`/pdf_preview?selected=${true}`);
+                window.open(`/pdf_preview?selected=${true}&photo_gallery=${isUnassigned?true:false}&ids=${selectedIdArray()}&length=${photos.length}`);
             }}
           >
             Export Selected To PDF
