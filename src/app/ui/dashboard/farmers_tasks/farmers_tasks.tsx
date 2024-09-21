@@ -28,8 +28,13 @@ const FarmersTasks = () => {
     []
   );
   const [selectedFilters, setSelectedFilters] = useState(() => {
-    const savedFilters = localStorage.getItem("selectedFilters");
-    return savedFilters ? JSON.parse(savedFilters) : {};
+    try
+      {
+        const savedFilters = localStorage?.getItem("selectedFilters");
+        return savedFilters ? JSON.parse(savedFilters) : {};
+      }catch(e){
+        return null
+      }
   });
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   //Refs
@@ -382,7 +387,7 @@ const FarmersTasks = () => {
               className="form-check-input changeFilter"
               data-field="status"
               data-fieldtype="new"
-              checked={!!selectedFilters["new"]}
+              checked={selectedFilters&&!!selectedFilters["new"]}
               onChange={handleCheckboxChange}
               value="1"
             ></input>
@@ -395,7 +400,7 @@ const FarmersTasks = () => {
               className="form-check-input changeFilter"
               data-field="status"
               data-fieldtype="open"
-              checked={!!selectedFilters["open"]}
+              checked={selectedFilters&&!!selectedFilters["open"]}
               onChange={handleCheckboxChange}
               value="1"
             />
@@ -408,7 +413,7 @@ const FarmersTasks = () => {
               className="form-check-input changeFilter"
               data-field="status"
               data-fieldtype="data provided"
-              checked={!!selectedFilters["data provided"]}
+              checked={selectedFilters&&!!selectedFilters["data provided"]}
               onChange={handleCheckboxChange}
               value="1"
             />
@@ -421,7 +426,7 @@ const FarmersTasks = () => {
               className="form-check-input changeFilter"
               data-field="status"
               data-fieldtype="returned"
-              checked={!!selectedFilters["returned"]}
+              checked={selectedFilters&&!!selectedFilters["returned"]}
               onChange={handleCheckboxChange}
               value="1"
             />
@@ -434,7 +439,7 @@ const FarmersTasks = () => {
               className="form-check-input changeFilter"
               data-field="flag"
               data-fieldtype="accepted"
-              checked={!!selectedFilters["accepted"]}
+              checked={selectedFilters&&!!selectedFilters["accepted"]}
               onChange={handleCheckboxChange}
               value="1"
             />
@@ -447,7 +452,7 @@ const FarmersTasks = () => {
               className="form-check-input changeFilter"
               data-field="flag"
               data-fieldtype="declined"
-              checked={!!selectedFilters["declined"]}
+              checked={selectedFilters&&!!selectedFilters["declined"]}
               onChange={handleCheckboxChange}
               value="1"
             />
@@ -463,7 +468,7 @@ const FarmersTasks = () => {
               className="form-check-input clicksort"
               data-field="after deadline"
               data-fieldtype="after deadline"
-              checked={!!selectedFilters["after deadline"]}
+              checked={selectedFilters&&!!selectedFilters["after deadline"]}
               onChange={handleCheckboxChange}
               value="1"
             />

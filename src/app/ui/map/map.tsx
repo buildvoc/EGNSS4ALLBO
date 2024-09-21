@@ -29,14 +29,12 @@ const Map = ({
 
 
   const mapViewClickHandler = () => {
-    console.log('Map View button clicked');
     setMapStyle('mapbox://styles/mapbox/streets-v11')
 
     // Add your custom logic here
 };
 
 const satelliteViewClickHandler = () => {
-    console.log('Satellite View button clicked');
     setMapStyle('mapbox://styles/mapbox/satellite-v9')
     // Add your custom logic here
 };
@@ -169,9 +167,6 @@ const toggleControl = new ToggleControl({
             insertMarkers()
           }
           if (map_tasks_array.length == 1) {
-            console.log('Value---',isUnassigned)
-
-
             mapboxMap.fitBounds(bounds, {
               padding: { top: 60, bottom: 60, left: 20, right: 20 },
               duration: 0,
@@ -562,7 +557,7 @@ const toggleControl = new ToggleControl({
       map.setLayoutProperty("unclustered-point", "visibility", "none");
     } else {
       // Remove markers if they are currently added
-      map.setLayoutProperty("unclustered-point", "visibility", "visible");
+    !isUnassigned  && map.setLayoutProperty("unclustered-point", "visibility", "visible");
       markerRef.current.forEach((marker: any) => {
         if (marker.getElement().parentElement) {
           marker.remove();

@@ -20,12 +20,11 @@ const PdfPreview = () => {
   const [pdfPhotos, setPdfPhotos] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  console.log("length ---", length);
-
   const [selectedTaskPhotos, setSelectedTasksPhoto] = useLocalStorage(
     "tasksPhotos",
     []
   );
+
   const [isGenerate, setIsGenerated] = useState({
     generate: false,
     length:
@@ -35,9 +34,7 @@ const PdfPreview = () => {
   });
 
   const getPhotosIds = async (id: number) => {
-    console.log("user id ---", id);
     let photos_ids = await get_unassigned_photos(id);
-    console.log("photos ids ---", photos_ids);
     return photos_ids;
   };
 
@@ -63,7 +60,6 @@ const PdfPreview = () => {
   const getPhotos = async () => {
     const session: any = await get_auth_session();
     let user: authenticated_user = await JSON.parse(session?.value);
-    console.log("user ---", user);
     const photos_ids: any =
       selected == "true"
         ? ids
@@ -76,21 +72,18 @@ const PdfPreview = () => {
     );
     setIsGenerated((values) => ({ ...values, length: photos.length }));
 
-    console.log("Unassigned photo ---", photos);
     setIsLoading(false);
     setPdfPhotos(photos);
   };
 
   useEffect(() => {
     photo_gallery == "true" && getPhotos();
+    photo_gallery == "false" && setPdfPhotos(selectedTaskPhotos)
   }, []);
-  useEffect(() => {
-    console.log("Pdf photos ---", pdfPhotos);
 
-  }, [pdfPhotos]);
   const getContent = (task: any, index: number) => {
     var photoArray: any = [];
-    const imageSrc = cnvrtImgUrl(task?.photo?.photo);
+    const imageSrc:any = cnvrtImgUrl(task?.photo?.photo);
 
     photoArray[0] = photo_gallery=='true'?pdfPhotos[index] :selectedTaskPhotos[index];
     return (
@@ -289,7 +282,9 @@ const PdfPreview = () => {
           </div>
         </div>
       </div>
-    );
+    
+
+  );
   };
 
   async function handleGenerate() {
@@ -312,7 +307,7 @@ const PdfPreview = () => {
   return (
     <div
       className={styles.container}
-      style={{ height: selectedTaskPhotos.length > 0 ? "auto" : "100vh" }}
+      style={{ height: "auto"}}
     >
       {isGenerate.generate ? (
         <ClientPdfRenderer
@@ -339,7 +334,6 @@ const PdfPreview = () => {
           {/* Implement mapping here */}
           {photo_gallery == "true"
             ? pdfPhotos?.map(function (task: any, index: number) {
-              console.log('pdf',task)
                 if (selected == "true") {
                   if (task?.check||photo_gallery=='true') {
                     return getContent(task, index);
@@ -348,7 +342,7 @@ const PdfPreview = () => {
                   return getContent(task, index);
                 }
               })
-            : selectedTaskPhotos?.map(function (task: any, index: number) {
+            : pdfPhotos?.map(function (task: any, index: number) {
                 if (selected == "true") {
                   if (task?.check) {
                     return getContent(task, index);

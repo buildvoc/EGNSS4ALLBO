@@ -13,7 +13,6 @@ const PhotoDetail = () => {
     "tasksPhotos",
     []
   );
-  console.log("selectedArray---",selectedTaskPhotos)
   const imageSrc = cnvrtImgUrl(selectedTaskPhotos[0]?.photo?.photo);
   const [image, setImage] = useState<any>(null);
   const [imageWidth, setImageWidth] = useState<any>("auto");

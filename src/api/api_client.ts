@@ -98,7 +98,6 @@ export const get_photo = async (photo_id: number) => {
         },
       }
     );
-    console.log(response)
     let res: any = await response.json();
     if (!response.ok) {
       throw new Error("Network response was not ok");
@@ -187,7 +186,6 @@ export const get_unassigned_photos = async (user_id: number) => {
       }
     );
     let res: any = await response.json();
-    console.log("photos ---",res?.photos_ids)
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }

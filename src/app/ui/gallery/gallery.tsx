@@ -55,7 +55,6 @@ const Gallery = () => {
       var map_unassigned_array2 = [];
       const session: any = await get_auth_session();
       let user: authenticated_user = await JSON.parse(session?.value);
-      console.log('User id ---',user.id);
 
       let photos_ids = await get_unassigned_photos(user.id);
 
@@ -73,7 +72,6 @@ const Gallery = () => {
         // setUnAssignedPhotos(map_unassigned_array);
         map_unassigned_array.push(task_photo_data)
       }
-      console.log('Unassigned photo ---',map_unassigned_array);
 
       setPhotoGallery(map_unassigned_array)
 

@@ -69,7 +69,6 @@ const AssignTask = ({isUnassigned}:any) => {
       var map_unassigned_array = [];
       const session: any = await get_auth_session();
       let user: authenticated_user = await JSON.parse(session?.value);
-      console.log("Ids---",selectedIdsArray)
 
  
 
@@ -87,7 +86,6 @@ const AssignTask = ({isUnassigned}:any) => {
         map_unassigned_array.push(task_photo_data);
       }
       setPhotos(map_unassigned_array)
-      console.log("Unassigned photo ---", map_unassigned_array);
     };
 
     fetchData();
@@ -118,6 +116,7 @@ const AssignTask = ({isUnassigned}:any) => {
                 data-field="status"
                 data-fieldtype="new"
                 type="checkbox"
+                onChange={()=>{}}
                 checked={true}
               />
               <label

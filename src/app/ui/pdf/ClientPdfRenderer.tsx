@@ -175,7 +175,9 @@ const PdfPage = ({
         <View style={styles.subtitle_container}>
           <Text>
             {" "}
-            {photos[0]?.farmer_name} {isPhotoGalelry!='true' &&(' - task detail')} {photos[0]?.task_name}{" "}
+            {photos[0]?.farmer_name}{" "}
+            {isPhotoGalelry != "true" && " - task detail"}{" "}
+            {photos[0]?.task_name}{" "}
           </Text>
         </View>
       </View>
@@ -191,7 +193,8 @@ const PdfPage = ({
         </View>
 
         <Text style={styles.task_title}>
-        {photos[0]?.farmer_name} {isPhotoGalelry!='true' && ('- task detail')} { photos[0]?.task_name}{" "}
+          {photos[0]?.farmer_name} {isPhotoGalelry != "true" && "- task detail"}{" "}
+          {photos[0]?.task_name}{" "}
         </Text>
         {isPhotoGalelry == "false" && (
           <View style={styles.task_list_container}>
@@ -408,7 +411,7 @@ const ClientPdfRenderer = ({
   length,
   isPhotoGallery,
   data,
-  totalPages
+  totalPages,
 }: any) => {
   const [pdfInstance, updatePdfInstance] = usePDF();
   const [selectedTaskPhotos, setSelectedTasksPhoto] = useLocalStorage(
@@ -533,12 +536,16 @@ const ClientPdfRenderer = ({
       })
     );
 
-    const canvas = await html2canvas(container);
-    const imgData = canvas.toDataURL("image/png");
-    // Cleanup
-    map.remove();
-    container.parentNode?.removeChild(container);
-    return imgData.replace(/^data:image\/\w+;base64,/, "");
+    try {
+      const canvas = await html2canvas(container);
+      const imgData = canvas.toDataURL("image/png");
+      // Cleanup
+      map.remove();
+      container.parentNode?.removeChild(container);
+      return imgData.replace(/^data:image\/\w+;base64,/, "");
+    }catch(e){
+      
+    }
   };
 
   useEffect(() => {
@@ -549,7 +556,10 @@ const ClientPdfRenderer = ({
         isPhotoGallery == "true"
           ? data[0].farmer_name
           : selectedTaskPhotos[0].farmer_name
-      } ${isPhotoGallery=="false"?('- task detail ' ) + selectedTaskPhotos[0]?.task_name:''
+      } ${
+        isPhotoGallery == "false"
+          ? "- task detail " + selectedTaskPhotos[0]?.task_name
+          : ""
       }  `;
 
       const pdfDocument = (
@@ -591,8 +601,11 @@ const ClientPdfRenderer = ({
           isPhotoGallery == "true"
             ? data[0].farmer_name
             : selectedTaskPhotos[0].farmer_name
-        } ${isPhotoGallery=="false" ? ('- task detail ') + selectedTaskPhotos[0]?.task_name
-        :''} `;
+        } ${
+          isPhotoGallery == "false"
+            ? "- task detail " + selectedTaskPhotos[0]?.task_name
+            : ""
+        } `;
         let name: string = `${formatedName}.pdf`;
         formData.append("file", blob, name);
 

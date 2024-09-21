@@ -16,7 +16,8 @@ import { FaTrash } from "react-icons/fa";
 const TaskGallery = ({ taskPhotos, isUnassigned }: any) => {
   const [photos, setPhotos] = useState(taskPhotos);
   const [showModal, setShowModal] = useState({ isShow: false, index: -1 });
-  const [selectedTaskPhotos, setSelectedTasksPhoto] = useLocalStorage(
+  const [selectedTaskPhotos, 
+    setSelectedTasksPhoto] = useLocalStorage(
     "tasksPhotos",
     []
   );
@@ -106,7 +107,6 @@ const TaskGallery = ({ taskPhotos, isUnassigned }: any) => {
       return null;
     });
     selectedId = selectedId.filter((id: any) => id != null);
-    console.log("SelectedIds---", selectedId);
 
     return selectedId.join(",");
     // checkIfPhotoSelect()&&window.open(`/choose_task`);
@@ -241,7 +241,8 @@ const TaskGallery = ({ taskPhotos, isUnassigned }: any) => {
                 data-field="status"
                 data-fieldtype="new"
                 type="checkbox"
-                checked={task?.check}
+                onChange={()=>{}}
+                checked={task?.check?task?.check:false}
               />
               <label
                 className="thumbnail"
@@ -428,6 +429,8 @@ const TaskGallery = ({ taskPhotos, isUnassigned }: any) => {
           />
         </span>
         <table>
+        <tbody>
+
           <tr>
             <td></td>
             <td className="bold">GPS L1</td>
@@ -482,6 +485,8 @@ const TaskGallery = ({ taskPhotos, isUnassigned }: any) => {
             <td></td>
             <td></td>
           </tr>
+          </tbody>
+
         </table>
       </div>
       <Modal_

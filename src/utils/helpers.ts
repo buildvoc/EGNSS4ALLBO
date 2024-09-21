@@ -1,6 +1,6 @@
 "use client";
 export const cnvrtImgUrl=(photo: any)=> {
-    return `data:image/jpeg;base64,${photo}`;
+    return photo ? `data:image/jpeg;base64,${photo}`:null;
   }
 export  const loadJQuery = async () => {
     // Dynamic import of jQuery
