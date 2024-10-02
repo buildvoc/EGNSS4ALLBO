@@ -180,14 +180,14 @@ const Map = ({
               });
             }
 
-            mapboxMap.on("movestart", () => {
-              console.log("Filteration start");
-            });
+   
+            if(isUnassigned)
+            {
+              mapboxMap.on("moveend", async () => {
+                filterData(mapboxMap);
+              });
+            }
 
-            mapboxMap.on("moveend", async () => {
-              console.log("Filteration end");
-              filterData(mapboxMap);
-            });
             mapboxMap.on("zoom", () => {
               updateUnclusteredIcon(mapboxMap);
             });
@@ -328,7 +328,6 @@ const Map = ({
                 const features: any = mapboxMap.queryRenderedFeatures(e.point, {
                   layers: ["clusters"],
                 });
-                console.log("cluster---",features)
                 const clusterId = features[0].properties.cluster_id;
 
                 mapboxMap
@@ -338,7 +337,7 @@ const Map = ({
                     (err: any, zoom: any) => {
                       if (err) return;
 
-                      mapboxMap.easeTo({
+                      mapboxMap.jumpTo({
                         center: features[0].geometry.coordinates,
                         zoom: zoom,
                       });
