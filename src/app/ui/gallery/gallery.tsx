@@ -55,7 +55,6 @@ const Gallery = () => {
       var map_unassigned_array2 = [];
       const session: any = await get_auth_session();
       let user: authenticated_user = await JSON.parse(session?.value);
-
       let photos_ids = await get_unassigned_photos(user.id);
 
       for (let id of photos_ids) {
@@ -81,6 +80,8 @@ const Gallery = () => {
 
   }, []);
 
+
+
   return (
     <div className={styles.container}>
       { <h2 style={{}}>Photo Gallery</h2>}
@@ -93,7 +94,7 @@ const Gallery = () => {
         BACK
       </a>
       </div>
-      <TaskGallery taskPhotos={photoGallery} isUnassigned={true}/>
+      <TaskGallery taskPhotos={photoGallery} isUnassigned={true} />
     </div>
   );
 };

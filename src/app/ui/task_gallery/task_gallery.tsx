@@ -13,8 +13,9 @@ import Link from "next/link";
 
 import { FaTrash } from "react-icons/fa";
 
-const TaskGallery = ({ taskPhotos, isUnassigned }: any) => {
+const TaskGallery = ({ taskPhotos, isUnassigned, onClick }: any) => {
   const [photos, setPhotos] = useState(taskPhotos);
+  const [selectedPhotosId, setSelectedPhotosId] = useState("");
   const [showModal, setShowModal] = useState({ isShow: false, index: -1 });
   const [selectedTaskPhotos, 
     setSelectedTasksPhoto] = useLocalStorage(
@@ -22,6 +23,8 @@ const TaskGallery = ({ taskPhotos, isUnassigned }: any) => {
     []
   );
   const [unassingedSelect, setUnassingedSelect] = useState();
+
+
 
   useEffect(() => {
     const initJQuery = async () => {
@@ -112,7 +115,7 @@ const TaskGallery = ({ taskPhotos, isUnassigned }: any) => {
     // checkIfPhotoSelect()&&window.open(`/choose_task`);
   };
 
-  const handlePhotoCheckBox = (id: number) => {
+  const handlePhotoCheckBox = (id: string) => {
     const withCheckUpdate = photos.map((photo: any) => {
       if (photo?.photo?.digest === id) {
         const check = !photo.hasOwnProperty("check") ? true : !photo?.check;
@@ -120,13 +123,30 @@ const TaskGallery = ({ taskPhotos, isUnassigned }: any) => {
       }
       return photo;
     });
-
     setPhotos(withCheckUpdate);
     !isUnassigned && setSelectedTasksPhoto(withCheckUpdate);
   };
+
+  //Method
+  const handleZoomFilter = (leaves: any) => {
+
+    // console.log("Filter ids", selectedPhotoIds,taskPhotos);
+    const filteredPhotos = taskPhotos.filter((photo:any) => leaves.includes(photo.id));
+    setPhotos(filteredPhotos);
+  };
+
+  useEffect(()=>{
+    if(selectedPhotosId.length>0)
+    {
+      handlePhotoCheckBox(selectedPhotosId)
+    }
+  },[selectedPhotosId])
+
+
+
   return (
     <div style={{ display: "flex", flexDirection: "column" }} id="task">
-      <DropdownMap map_tasks_array={taskPhotos} isUnassigned={isUnassigned} />
+      <DropdownMap map_tasks_array={taskPhotos} isUnassigned={isUnassigned} onClick={(id:any,digest:any)=>setSelectedPhotosId(digest)} zoomFilter={handleZoomFilter}/>
 
       <div className="float-left w-100 unassigned-actions-row">
         {isUnassigned && (

@@ -9,7 +9,7 @@ import TaskPhoto from "../dashboard/farmers_tasks/task_photo/task_photo";
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN as any;
 import CustomPopup from "./CustomPopup";
 import path from "path";
-import { map } from "jquery";
+import { data, map } from "jquery";
 
 const Map = ({
   map_tasks_array,
@@ -19,29 +19,32 @@ const Map = ({
   setIsMapLoad,
   isUnassigned,
   isSelected,
-  paths
+  paths,
+  zoomFilter,
 }: any) => {
   //Refs
   const mapNode = useRef<any | HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
   const markerRef = useRef<any>([]);
-  const [mapStyle,setMapStyle]=useState('mapbox://styles/mapbox/streets-v11')
-
+  const [filteredData, setFilteredData] = useState([]);
+  const [mapStyle, setMapStyle] = useState(
+    "mapbox://styles/mapbox/streets-v11"
+  );
 
   const mapViewClickHandler = () => {
-    setMapStyle('mapbox://styles/mapbox/streets-v11')
+    setMapStyle("mapbox://styles/mapbox/streets-v11");
 
     // Add your custom logic here
-};
+  };
 
-const satelliteViewClickHandler = () => {
-    setMapStyle('mapbox://styles/mapbox/satellite-v9')
+  const satelliteViewClickHandler = () => {
+    setMapStyle("mapbox://styles/mapbox/satellite-v9");
     // Add your custom logic here
-};
-const toggleControl = new ToggleControl({
-  onMapViewClick: mapViewClickHandler,
-  onSatelliteViewClick: satelliteViewClickHandler
-});
+  };
+  const toggleControl = new ToggleControl({
+    onMapViewClick: mapViewClickHandler,
+    onSatelliteViewClick: satelliteViewClickHandler,
+  });
 
   useEffect(() => {
     markerRef.current = [];
@@ -50,7 +53,7 @@ const toggleControl = new ToggleControl({
     return () => {
       mapRef.current = null;
     };
-  }, [map_tasks_array,mapStyle]);
+  }, [map_tasks_array, mapStyle]);
 
   useEffect(() => {
     loadMapBox();
@@ -73,8 +76,6 @@ const toggleControl = new ToggleControl({
   //   };
   // }, [map_tasks_array, points]);
 
-  //Functions
-
   const loadMapBox = () => {
     if (mapRef.current) {
       mapRef.current.remove();
@@ -93,23 +94,20 @@ const toggleControl = new ToggleControl({
       zoom: 2.7,
       preserveDrawingBuffer: setIsMapLoad != undefined && true,
     });
-    mapboxMap.on('load',()=>{
-
+    mapboxMap.on("load", () => {
       mapboxMap.addLayer({
-        'id': 'satellite-layer',
-        'source': {
-            'type': 'raster',
-            'url': 'mapbox://mapbox.satellite',
-            'tileSize': 256
+        id: "satellite-layer",
+        source: {
+          type: "raster",
+          url: "mapbox://mapbox.satellite",
+          tileSize: 256,
         },
-        'type': 'raster',
-        'layout': {
-            'visibility': 'none' // Start with satellite layer hidden
-        }
+        type: "raster",
+        layout: {
+          visibility: "none", // Start with satellite layer hidden
+        },
+      });
     });
-
-    })
-
 
     mapboxMap.addControl(toggleControl, "top-left");
     mapboxMap.addControl(new mapboxgl.NavigationControl());
@@ -162,9 +160,8 @@ const toggleControl = new ToggleControl({
           map_tasks_array.forEach((task: any) => {
             addMarkers(task);
           });
-          if(isSelected)
-          {
-            insertMarkers()
+          if (isSelected) {
+            insertMarkers();
           }
           if (map_tasks_array.length == 1) {
             mapboxMap.fitBounds(bounds, {
@@ -175,7 +172,6 @@ const toggleControl = new ToggleControl({
             });
             insertMarkers();
           } else {
-
             if (map_tasks_array.length > 0) {
               mapboxMap.fitBounds(bounds, {
                 padding: { top: 60, bottom: 60, left: 20, right: 20 },
@@ -184,7 +180,14 @@ const toggleControl = new ToggleControl({
               });
             }
 
-            // Handle image change based on zoom level
+            mapboxMap.on("movestart", () => {
+              console.log("Filteration start");
+            });
+
+            mapboxMap.on("moveend", async () => {
+              console.log("Filteration end");
+              filterData(mapboxMap);
+            });
             mapboxMap.on("zoom", () => {
               updateUnclusteredIcon(mapboxMap);
             });
@@ -242,12 +245,44 @@ const toggleControl = new ToggleControl({
                       id: task.id,
                       status: task.status,
                       location: task.location,
+                      digest: task.photo.digest,
                     },
                   })),
                 },
                 cluster: true,
                 clusterMaxZoom: 14, // Max zoom to cluster points on
                 clusterRadius: 50, // Radius of each cluster when clustering points (defaults to 50)
+              });
+
+              mapboxMap.addSource("filter_source", {
+                type: "geojson",
+                // Point to GeoJSON data. This example visualizes all M1.0+ earthquakes
+                // from 12/22/15 to 1/21/16 as logged by USGS' Earthquake hazards program.
+                data: {
+                  type: "FeatureCollection",
+                  features: map_tasks_array.map((task: any) => ({
+                    type: "Feature",
+                    geometry: {
+                      type: "Point",
+                      coordinates: task.location,
+                    },
+                    properties: {
+                      id: task.id,
+                      status: task.status,
+                      location: task.location,
+                      digest: task.photo.digest,
+                    },
+                  })),
+                },
+              });
+
+              mapboxMap.addLayer({
+                id: 'circles-layer',
+                type: 'circle',
+                source: 'filter_source',
+                paint:{
+                  "circle-opacity": 0,
+                } 
               });
 
               mapboxMap.addLayer({
@@ -288,16 +323,14 @@ const toggleControl = new ToggleControl({
 
               // handle zoom level
 
-   
-
               // inspect a cluster on click
-              mapboxMap.on("click", "clusters", (e) => {
-                
+              mapboxMap.on("click", "clusters", (e: any) => {
                 const features: any = mapboxMap.queryRenderedFeatures(e.point, {
                   layers: ["clusters"],
                 });
-
+                console.log("cluster---",features)
                 const clusterId = features[0].properties.cluster_id;
+
                 mapboxMap
                   .getSource("tasks_photos")
                   ?.getClusterExpansionZoom(
@@ -305,7 +338,7 @@ const toggleControl = new ToggleControl({
                     (err: any, zoom: any) => {
                       if (err) return;
 
-                      mapboxMap.jumpTo({
+                      mapboxMap.easeTo({
                         center: features[0].geometry.coordinates,
                         zoom: zoom,
                       });
@@ -318,6 +351,7 @@ const toggleControl = new ToggleControl({
                 const coordinates = JSON.parse(
                   e.features[0].properties.location
                 );
+
                 mapboxMap.jumpTo({
                   center: coordinates,
                   zoom: 16, // Specify your zoom level here
@@ -338,9 +372,14 @@ const toggleControl = new ToggleControl({
     return mapboxMap;
   };
 
+  async function filterData(map: any) {
+    const clusters = map.queryRenderedFeatures({
+      layers: ["circles-layer"],
+    });
+    zoomFilter(clusters.map((photo: any) => photo.properties.id));
+  }
   const loadPath = (path: any) => {
     mapRef.current.on("load", () => {
-
       const coordinates = path.points.map((point: any) => [
         parseFloat(point.lng),
         parseFloat(point.lat),
@@ -557,7 +596,8 @@ const toggleControl = new ToggleControl({
       map.setLayoutProperty("unclustered-point", "visibility", "none");
     } else {
       // Remove markers if they are currently added
-    !isUnassigned  && map.setLayoutProperty("unclustered-point", "visibility", "visible");
+      !isUnassigned &&
+        map.setLayoutProperty("unclustered-point", "visibility", "visible");
       markerRef.current.forEach((marker: any) => {
         if (marker.getElement().parentElement) {
           marker.remove();

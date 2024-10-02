@@ -8,7 +8,7 @@ const TaskPhoto: any = ({ data, onClick }: any) => {
     : null;
 
   return (
-    <div style={{ cursor: "pointer" }} onClick={() => onClick && onClick(id)}>
+    <div style={{ cursor: "pointer" }} onClick={() => onClick && onClick(id,photo.digest)}>
       <div className={styles.js_popup}>
         <div>{farmer_name}</div>
         <div>{task_name}</div>
