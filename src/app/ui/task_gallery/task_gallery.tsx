@@ -200,7 +200,8 @@ const TaskGallery = ({ taskPhotos, isUnassigned, onClick }: any) => {
             onClick={() => {
               if(photos.length>0)
               {
-                window.open(`/pdf_preview?selected=${false}&photo_gallery=${isUnassigned?true:false}&length=${photos.length}`);
+                let values = photos.map((photo: any) => photo.id)
+                window.open(`/pdf_preview?selected=${isUnassigned?true:false}&photo_gallery=${isUnassigned?true:false}&&ids=${values}&length=${photos.length}`);
 
               }
             }}
