@@ -18,6 +18,7 @@ const Layout = ({ children }:any) => {
     // If no session cookie is found, redirect to login
     redirect('/login');
   }
+  
 
   return (
     <div className={styles.container}>

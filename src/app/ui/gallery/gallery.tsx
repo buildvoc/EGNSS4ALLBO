@@ -81,19 +81,10 @@ const Gallery = () => {
   }, []);
 
 
+  useEffect(()=>{console.log("parent reander---")},[])
 
   return (
     <div className={styles.container}>
-      { <h2 style={{}}>Photo Gallery</h2>}
-      <div style={{marginTop:20,marginBottom:20}}>
-      <a
-      href="/home"
-        className={`${styles.btn} primary  text-capitalize pl-0 mr-2`} 
-      >
-        <FaChevronLeft className={`${styles.chevron_style}  mr-2 `} />
-        BACK
-      </a>
-      </div>
       <TaskGallery taskPhotos={photoGallery} isUnassigned={true} />
     </div>
   );

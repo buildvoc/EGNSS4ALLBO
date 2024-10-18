@@ -22,19 +22,20 @@ const FarmersTasks = () => {
   const [filter_tasks_photos, set_filter_tasks_photos] = useState<any>([]);
   const [local_tasks_photos, set_local_tasks_photos] = useState<any>([]);
   const [taskData, setTaskData] = useLocalStorage("tasks", []);
+  const [isMobile, setIsMobile] = useState(false);
+
   const [tasks, setTasks] = useState([]);
   const [selectedTasksPhotos, setSelectedTasksPhoto] = useLocalStorage(
     "tasksPhotos",
     []
   );
   const [selectedFilters, setSelectedFilters] = useState(() => {
-    try
-      {
-        const savedFilters = localStorage?.getItem("selectedFilters");
-        return savedFilters ? JSON.parse(savedFilters) : {};
-      }catch(e){
-        return null
-      }
+    try {
+      const savedFilters = localStorage?.getItem("selectedFilters");
+      return savedFilters ? JSON.parse(savedFilters) : {};
+    } catch (e) {
+      return null;
+    }
   });
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   //Refs
@@ -44,7 +45,6 @@ const FarmersTasks = () => {
   //Custom hook
 
   useEffect(() => {
-    
     const fetchData = async () => {
       var map_tasks_array: any = [];
       var map_tasks_array_local: any = [];
@@ -62,10 +62,10 @@ const FarmersTasks = () => {
             status: task?.status,
             farmer_name: `${user.name} ${user.surname}`,
             task_name: task?.name,
-            note:task?.note,
-            text:task?.text,
-            date_created:task.date_created,
-            task_due_date:task.task_due_date,
+            note: task?.note,
+            text: task?.text,
+            date_created: task.date_created,
+            task_due_date: task.task_due_date,
             photo: result,
             location: [result[0]?.lng, result[0]?.lat],
           };
@@ -82,9 +82,26 @@ const FarmersTasks = () => {
       setTasks(result_task);
     };
 
+    // Define the media query for mobile view
+    const mediaQuery = window.matchMedia("(max-width: 768px)");
+
+    // Function to update state based on media query result
+    const handleMediaChange = (e:any) => {
+      setIsMobile(e.matches); // `e.matches` is true if screen width <= 768px
+    };
+
+    // Initial check
+    handleMediaChange(mediaQuery);
+
+    // Listen for changes in the screen resolution
+    mediaQuery.addListener(handleMediaChange);
+
+    // Clean up the listener on component unmount
+
     fetchData();
     return () => {
       previousTasksRef.current = null;
+      mediaQuery.removeListener(handleMediaChange);
     };
   }, []);
 
@@ -115,18 +132,16 @@ const FarmersTasks = () => {
   };
 
   const handle_toggle_task_details = (taskId: any) => {
-
     const selectedTask = tasks.filter((res: any) => res?.id == taskId);
     const selectedTaskPhotos = tasksPhotos.filter(
       (res: any) => res?.id == taskId
     );
 
-    if(selectedTaskPhotos.length==0)
-    {
+    if (selectedTaskPhotos.length == 0) {
       setTaskData(selectedTask);
       setSelectedTasksPhoto([]);
       router.push(`/task`);
-      return ;
+      return;
     }
     let map_tasks_array = [];
     for (let item of selectedTaskPhotos[0]?.photo) {
@@ -135,10 +150,10 @@ const FarmersTasks = () => {
         status: selectedTaskPhotos[0]?.status,
         farmer_name: `${user.name} ${user.surname}`,
         task_name: selectedTaskPhotos[0]?.task_name,
-        note:selectedTaskPhotos[0]?.note,
-        text:selectedTaskPhotos[0]?.text,
-        date_created:selectedTaskPhotos[0]?.date_created,
-        task_due_date:selectedTaskPhotos[0]?.task_due_date,
+        note: selectedTaskPhotos[0]?.note,
+        text: selectedTaskPhotos[0]?.text,
+        date_created: selectedTaskPhotos[0]?.date_created,
+        task_due_date: selectedTaskPhotos[0]?.task_due_date,
         photo: item,
         location: [item?.lng, item?.lat],
       };
@@ -341,290 +356,324 @@ const FarmersTasks = () => {
     }
   };
 
-  return (
-    <div className={styles.container}>
-      <h2>Tasks</h2>
-      <div className="pt-2 pb-2 mb-3">
-        <a
-          href={`/photo_gallery`}
-          className="btn btn-primary mb-2 d-block d-md-inline"
+  const LeftPane = () => {
+    return (
+      <div>
+        <button
+          type="button"
+          onClick={() => {
+            sortData("reset");
+          }}
+          className={`clickResetSort btn ${styles.cancle_sorting}  primary pl-0 mt-3`}
         >
-          PHOTO GALLERY
-        </a>
-        <a
-          href={`/user_paths?id=${user.id}`}
-          className="btn btn-primary mb-2 ml-md-2 d-block d-md-inline"
-        >
-          SHOW PATHS
-        </a>
-      </div>
-      <DropdownMap
-        map_tasks_array={filter_tasks_photos}
-        onClick={handle_toggle_task_details}
-      />
-      <nav className="navbar navbar-light bg-transparent">
-        <form action={handle_search_submission} className="form-inline">
-          <input
-            className="form-control mr-sm-2 js_search_input mb-0 input-light"
-            type="search"
-            name="search"
-            aria-label="Search"
+          <FaTimesCircle
+            className={`fas fa-times-circle mr-2 icon`}
+            size={18}
           />
-          <button type="submit" className="btn js_search px-2 pt-2">
-            {" "}
-            <FaSearch className="primary" size={18} />
-          </button>
-        </form>
-      </nav>
-
-      <div className="filter_section">
-        <h5>Status filter:</h5>
-        <div className="status_filters">
-          <div className="form-check">
-            <input
-              id="filter_status_new"
-              type="checkbox"
-              className="form-check-input changeFilter"
-              data-field="status"
-              data-fieldtype="new"
-              checked={selectedFilters&&!!selectedFilters["new"]}
-              onChange={handleCheckboxChange}
-              value="1"
-            ></input>
-            <label className="form-check-label">New</label>
+          CANCEL SORTING
+        </button>
+        <div className="showing-count">{`Showing ${filter_tasks.length} out of ${tasks.length}`}</div>
+        {tasks.length > 0 && (
+          <div className="table_cont" >
+            <table className="w-100 table float-md-left js_table  table_responsive">
+              <thead>
+                <tr>
+                  <th
+                    className={`clicksort ${
+                      (sortConfig.key == "status" || sortConfig.key == null) &&
+                      (sortConfig.direction == "asc" ? "ASC" : "DESC")
+                    }`}
+                    onClick={() => sortData("status")}
+                  >
+                    <span className="sortflag">
+                      <FaCircleArrowDown className="fas" />{" "}
+                    </span>
+                    Status
+                  </th>
+                  <th
+                    className={`clicksort ${
+                      sortConfig.key == "photo taken" &&
+                      (sortConfig.direction == "asc" ? "ASC" : "DESC")
+                    }`}
+                    onClick={() => sortData("photo taken")}
+                  >
+                    <span className="sortflag">
+                      <FaCircleArrowDown className="fas" />{" "}
+                    </span>
+                    Photos taken
+                  </th>
+                  <th
+                    className={`clicksort ${
+                      sortConfig.key == "name" &&
+                      (sortConfig.direction == "asc" ? "ASC" : "DESC")
+                    }`}
+                    onClick={() => sortData("name")}
+                  >
+                    <span className="sortflag">
+                      <FaCircleArrowDown className="fas" />{" "}
+                    </span>
+                    Name
+                  </th>
+                  <th
+                    className={`clicksort ${
+                      sortConfig.key == "description" &&
+                      (sortConfig.direction == "asc" ? "ASC" : "DESC")
+                    }`}
+                    onClick={() => sortData("description")}
+                  >
+                    <span className="sortflag">
+                      <FaCircleArrowDown className="fas" />{" "}
+                    </span>
+                    Description
+                  </th>
+                  <th
+                    className={`clicksort ${
+                      sortConfig.key == "date created" &&
+                      (sortConfig.direction == "asc" ? "ASC" : "DESC")
+                    }`}
+                    onClick={() => sortData("date created")}
+                  >
+                    <span className="sortflag">
+                      <FaCircleArrowDown className="fas" />{" "}
+                    </span>
+                    Date created
+                  </th>
+                  <th
+                    className={`clicksort ${
+                      sortConfig.key == "due date" &&
+                      (sortConfig.direction == "asc" ? "ASC" : "DESC")
+                    }`}
+                    onClick={() => sortData("due date")}
+                  >
+                    <span className="sortflag">
+                      <FaCircleArrowDown className="fas" />{" "}
+                    </span>
+                    Due date
+                  </th>
+                  <th
+                    className={`clicksort ${
+                      sortConfig.key == "acception" &&
+                      (sortConfig.direction == "asc" ? "ASC" : "DESC")
+                    }`}
+                    onClick={() => sortData("acception")}
+                  >
+                    <span className="sortflag">
+                      <FaCircleArrowDown className="fas" />{" "}
+                    </span>
+                    Acception
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {filter_tasks?.map(function (task: any, index: number) {
+                  return (
+                    <tr
+                      key={index}
+                      className="clickable"
+                      onClick={() => handle_toggle_task_details(task.id)}
+                    >
+                      <td data-label="Status">
+                        <span
+                          className={`task_status  ${
+                            task.status === "data checked"
+                              ? `datachecked_${task.flag_valid}`
+                              : task.status.replace(" ", "").toLowerCase()
+                          }`}
+                        >
+                          {task.status}
+                        </span>
+                      </td>
+                      <td data-label="Photos taken">
+                        {task.photos_ids.length}
+                      </td>
+                      <td data-label="Name">{task.name}</td>
+                      <td data-label="Description">{task.text}</td>
+                      <td data-label="Date created">
+                        {task.date_created.split(" ")[0]}
+                      </td>
+                      <td data-label="Due date">
+                        {task.task_due_date.split(" ")[0]}
+                      </td>
+                      <td data-label="Acception">
+                        {task.status == "data provided" ? (
+                          <div className="btn btn-light btn_status w-100p">
+                            waiting
+                          </div>
+                        ) : (
+                          task.flag_valid === "1" && (
+                            <div className="btn btn-success btn_status w-100p">
+                              Accepted
+                            </div>
+                          )
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
-          <div className="form-check">
-            <input
-              id="filter_status_open"
-              type="checkbox"
-              className="form-check-input changeFilter"
-              data-field="status"
-              data-fieldtype="open"
-              checked={selectedFilters&&!!selectedFilters["open"]}
-              onChange={handleCheckboxChange}
-              value="1"
-            />
-            <label className="form-check-label">Open</label>
-          </div>
-          <div className="form-check">
-            <input
-              id="filter_status_provided"
-              type="checkbox"
-              className="form-check-input changeFilter"
-              data-field="status"
-              data-fieldtype="data provided"
-              checked={selectedFilters&&!!selectedFilters["data provided"]}
-              onChange={handleCheckboxChange}
-              value="1"
-            />
-            <label className="form-check-label">Data provided</label>
-          </div>
-          <div className="form-check">
-            <input
-              id="filter_status_returned"
-              type="checkbox"
-              className="form-check-input changeFilter"
-              data-field="status"
-              data-fieldtype="returned"
-              checked={selectedFilters&&!!selectedFilters["returned"]}
-              onChange={handleCheckboxChange}
-              value="1"
-            />
-            <label className="form-check-label">Returned</label>
-          </div>
-          <div className="form-check">
-            <input
-              id="filter_status_checked"
-              type="checkbox"
-              className="form-check-input changeFilter"
-              data-field="flag"
-              data-fieldtype="accepted"
-              checked={selectedFilters&&!!selectedFilters["accepted"]}
-              onChange={handleCheckboxChange}
-              value="1"
-            />
-            <label className="form-check-label">Accepted</label>
-          </div>
-          <div className="form-check">
-            <input
-              id="filter_status_closed"
-              type="checkbox"
-              className="form-check-input changeFilter"
-              data-field="flag"
-              data-fieldtype="declined"
-              checked={selectedFilters&&!!selectedFilters["declined"]}
-              onChange={handleCheckboxChange}
-              value="1"
-            />
-            <label className="form-check-label">Declined</label>
-          </div>
+        )}
+      </div>
+    );
+  };
+  const RightPane = () => {
+    return (
+      <div>
+        <h2>Tasks</h2>
+        <div className="pt-2 pb-2 mb-3">
+          <a
+            href={`/photo_gallery`}
+            className="btn btn-primary mb-2 d-block d-md-inline"
+          >
+            PHOTO GALLERY
+          </a>
+          <a
+            href={`/user_paths?id=${user.id}`}
+            className="btn btn-primary mb-2 ml-md-2 d-block d-md-inline"
+          >
+            SHOW PATHS
+          </a>
         </div>
-        <h5 className="mt-3">Sort:</h5>
-        <div className="advanced_sorting">
-          <div className="form-check">
+        <DropdownMap
+          map_tasks_array={filter_tasks_photos}
+          onClick={handle_toggle_task_details}
+        />
+        <nav className="navbar navbar-light bg-transparent">
+          <form action={handle_search_submission} className="form-inline">
             <input
-              id="after_deadline_to_end"
-              type="checkbox"
-              className="form-check-input clicksort"
-              data-field="after deadline"
-              data-fieldtype="after deadline"
-              checked={selectedFilters&&!!selectedFilters["after deadline"]}
-              onChange={handleCheckboxChange}
-              value="1"
+              className="form-control mr-sm-2 js_search_input mb-0 input-light"
+              type="search"
+              name="search"
+              aria-label="Search"
             />
-            <label className="form-check-label ">After deadline last</label>
+            <button type="submit" className="btn js_search px-2 pt-2">
+              {" "}
+              <FaSearch className="primary" size={18} />
+            </button>
+          </form>
+        </nav>
+
+        <div className="filter_section">
+          <h5>Status filter:</h5>
+          <div className="status_filters">
+            <div className="form-check">
+              <input
+                id="filter_status_new"
+                type="checkbox"
+                className="form-check-input changeFilter"
+                data-field="status"
+                data-fieldtype="new"
+                checked={selectedFilters && !!selectedFilters["new"]}
+                onChange={handleCheckboxChange}
+                value="1"
+              ></input>
+              <label className="form-check-label">New</label>
+            </div>
+            <div className="form-check">
+              <input
+                id="filter_status_open"
+                type="checkbox"
+                className="form-check-input changeFilter"
+                data-field="status"
+                data-fieldtype="open"
+                checked={selectedFilters && !!selectedFilters["open"]}
+                onChange={handleCheckboxChange}
+                value="1"
+              />
+              <label className="form-check-label">Open</label>
+            </div>
+            <div className="form-check">
+              <input
+                id="filter_status_provided"
+                type="checkbox"
+                className="form-check-input changeFilter"
+                data-field="status"
+                data-fieldtype="data provided"
+                checked={selectedFilters && !!selectedFilters["data provided"]}
+                onChange={handleCheckboxChange}
+                value="1"
+              />
+              <label className="form-check-label">Data provided</label>
+            </div>
+            <div className="form-check">
+              <input
+                id="filter_status_returned"
+                type="checkbox"
+                className="form-check-input changeFilter"
+                data-field="status"
+                data-fieldtype="returned"
+                checked={selectedFilters && !!selectedFilters["returned"]}
+                onChange={handleCheckboxChange}
+                value="1"
+              />
+              <label className="form-check-label">Returned</label>
+            </div>
+            <div className="form-check">
+              <input
+                id="filter_status_checked"
+                type="checkbox"
+                className="form-check-input changeFilter"
+                data-field="flag"
+                data-fieldtype="accepted"
+                checked={selectedFilters && !!selectedFilters["accepted"]}
+                onChange={handleCheckboxChange}
+                value="1"
+              />
+              <label className="form-check-label">Accepted</label>
+            </div>
+            <div className="form-check">
+              <input
+                id="filter_status_closed"
+                type="checkbox"
+                className="form-check-input changeFilter"
+                data-field="flag"
+                data-fieldtype="declined"
+                checked={selectedFilters && !!selectedFilters["declined"]}
+                onChange={handleCheckboxChange}
+                value="1"
+              />
+              <label className="form-check-label">Declined</label>
+            </div>
+          </div>
+
+          <h5 className="mt-3">Sort:</h5>
+          <div className="advanced_sorting">
+            <div className="form-check">
+              <input
+                id="after_deadline_to_end"
+                type="checkbox"
+                className="form-check-input clicksort"
+                data-field="after deadline"
+                data-fieldtype="after deadline"
+                checked={selectedFilters && !!selectedFilters["after deadline"]}
+                onChange={handleCheckboxChange}
+                value="1"
+              />
+              <label className="form-check-label ">After deadline last</label>
+            </div>
           </div>
         </div>
       </div>
-      <button
-        type="button"
-        onClick={() => {
-          sortData("reset");
-        }}
-        className={`clickResetSort btn ${styles.cancle_sorting}  primary pl-0 mt-3`}
-      >
-        <FaTimesCircle className={`fas fa-times-circle mr-2 icon`} size={18} />
-        CANCEL SORTING
-      </button>
-      <div className="showing-count">{`Showing ${filter_tasks.length} out of ${tasks.length}`}</div>
-      {tasks.length > 0 && (
-        <div className="table_cont">
-          <table className="w-100 table float-md-left js_table  table_responsive">
-            <thead>
-              <tr>
-                <th
-                  className={`clicksort ${
-                    (sortConfig.key == "status" || sortConfig.key == null) &&
-                    (sortConfig.direction == "asc" ? "ASC" : "DESC")
-                  }`}
-                  onClick={() => sortData("status")}
-                >
-                  <span className="sortflag">
-                    <FaCircleArrowDown className="fas" />{" "}
-                  </span>
-                  Status
-                </th>
-                <th
-                  className={`clicksort ${
-                    sortConfig.key == "photo taken" &&
-                    (sortConfig.direction == "asc" ? "ASC" : "DESC")
-                  }`}
-                  onClick={() => sortData("photo taken")}
-                >
-                  <span className="sortflag">
-                    <FaCircleArrowDown className="fas" />{" "}
-                  </span>
-                  Photos taken
-                </th>
-                <th
-                  className={`clicksort ${
-                    sortConfig.key == "name" &&
-                    (sortConfig.direction == "asc" ? "ASC" : "DESC")
-                  }`}
-                  onClick={() => sortData("name")}
-                >
-                  <span className="sortflag">
-                    <FaCircleArrowDown className="fas" />{" "}
-                  </span>
-                  Name
-                </th>
-                <th
-                  className={`clicksort ${
-                    sortConfig.key == "description" &&
-                    (sortConfig.direction == "asc" ? "ASC" : "DESC")
-                  }`}
-                  onClick={() => sortData("description")}
-                >
-                  <span className="sortflag">
-                    <FaCircleArrowDown className="fas" />{" "}
-                  </span>
-                  Description
-                </th>
-                <th
-                  className={`clicksort ${
-                    sortConfig.key == "date created" &&
-                    (sortConfig.direction == "asc" ? "ASC" : "DESC")
-                  }`}
-                  onClick={() => sortData("date created")}
-                >
-                  <span className="sortflag">
-                    <FaCircleArrowDown className="fas" />{" "}
-                  </span>
-                  Date created
-                </th>
-                <th
-                  className={`clicksort ${
-                    sortConfig.key == "due date" &&
-                    (sortConfig.direction == "asc" ? "ASC" : "DESC")
-                  }`}
-                  onClick={() => sortData("due date")}
-                >
-                  <span className="sortflag">
-                    <FaCircleArrowDown className="fas" />{" "}
-                  </span>
-                  Due date
-                </th>
-                <th
-                  className={`clicksort ${
-                    sortConfig.key == "acception" &&
-                    (sortConfig.direction == "asc" ? "ASC" : "DESC")
-                  }`}
-                  onClick={() => sortData("acception")}
-                >
-                  <span className="sortflag">
-                    <FaCircleArrowDown className="fas" />{" "}
-                  </span>
-                  Acception
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {filter_tasks?.map(function (task: any, index: number) {
-                return (
-                  <tr
-                    key={index}
-                    className="clickable"
-                    onClick={() => handle_toggle_task_details(task.id)}
-                  >
-                    <td data-label="Status">
-                      <span
-                        className={`task_status  ${
-                          task.status === "data checked"
-                            ? `datachecked_${task.flag_valid}`
-                            : task.status.replace(" ", "").toLowerCase()
-                        }`}
-                      >
-                        {task.status}
-                      </span>
-                    </td>
-                    <td data-label="Photos taken">{task.photos_ids.length}</td>
-                    <td data-label="Name">{task.name}</td>
-                    <td data-label="Description">{task.text}</td>
-                    <td data-label="Date created">
-                      {task.date_created.split(" ")[0]}
-                    </td>
-                    <td data-label="Due date">
-                      {task.task_due_date.split(" ")[0]}
-                    </td>
-                    <td data-label="Acception">
-                      {task.status == "data provided" ? (
-                        <div className="btn btn-light btn_status w-100p">
-                          waiting
-                        </div>
-                      ) : (
-                        task.flag_valid === "1" && (
-                          <div className="btn btn-success btn_status w-100p">
-                            Accepted
-                          </div>
-                        )
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+    );
+  };
+
+  return (
+    <div className={isMobile ? styles.container:styles.split_view_container}>
+      {isMobile ? (
+        <div style={{width:"100%"}}>
+          <RightPane />
+          <LeftPane />
         </div>
+      ) : (
+        <>
+          <div className={styles.split_view_master}>
+            <LeftPane />
+          </div>
+          <div className={styles.split_view_detail}>
+            <RightPane />
+          </div>
+        </>
       )}
     </div>
   );
