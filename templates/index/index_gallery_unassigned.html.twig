@@ -84,6 +84,16 @@
                 <tr><td><label class="dark" title="{{ pht_timestamp_title }}">{{ pht_timestamp }}</label></td><td><label title="{{ pht_timestamp_title }}">{{ photo.timestamp }}</label></td></tr>
                 <tr><td><label class="dark" title="{{ pht_created_date_title }}">{{ pht_created_date }}</label></td><td><label title="{{ pht_created_date_title }}">{{ photo.created_date }}</label></td></tr>
                 <tr><td></td><td><label class="js_open_ekf" data-id="{{ photo.id }}">{{ show_ekf_metadata }}</label></td></tr>
+
+                {% if photo.network_info is not empty %}
+                <tr><td><label class="dark" title="{{ pht_network_info_title }}">Network status</label></td><td><label title="{{ pht_network_info }}"> Online </label></td></tr>
+                {% endif %}
+                <tr><td><label class="dark" title="{{ pht_osnma_enabled_title }}">OSNMA Validation</label></td><td>{% if photo.osnma_enabled == "1" %} <label title="" class="text_color_1">Enabled</label> {% else %} <label title="" class="text_color_0">Photo has not been verified yet</label> {% endif %}</td></tr>
+                {% if photo.osnma_enabled == "1" %}
+                <tr><td><label class="dark" title="{{ pht_validated_sats_title }}">Validated satellites</label></td><td><label title="{{ pht_validated_sats }}">{{ photo.validated_sats }}</label></td></tr>
+                {% endif %}
+                <tr><td></td><td>{% if photo.osnma_validated == "1" %} <label title="" class="text_color_1">Photo location is OSNMA validated</label> {% else %} <label title="" class="text_color_0">Photo location is not validated</label>{% endif %}</td></tr>
+
                 {% if agency %}
                   <tr>
                     <td></td>
