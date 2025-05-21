@@ -114,6 +114,9 @@ const FILTER_TYPE = "{{ mapjs_filter_type }}";
                 </label>
               </td>
             </tr>
+
+            <tr><td><label class="dark" title="{{ pht_osnma_enabled_title }}">OSNMA Validation</label></td><td>{% if image.osnma_enabled == "1" %} <label title="" class="text_color_1">Enabled</label> {% else %} <label title="" class="text_color_0">Disabled</label> {% endif %}</td></tr>
+            <tr><td></td><td>{% if image.osnma_validated == "1" %} <label title="" class="text_color_1">Photo location is OSNMA validated</label> {% else %} <label title="" class="text_color_0">Photo location is not validated</label>{% endif %}</td></tr>
           </tbody>
         </table>
       </td>

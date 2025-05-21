@@ -104,6 +104,15 @@
                 </label>
               </td>
             </tr>
+            
+            {% if image.network_info is not empty %}
+            <tr><td class="td td_01"><label title="{{ pht_network_info_title }}">Network status</label></td><td class="td"><label title="{{ pht_network_info }}"> Online </label></td></tr>
+            {% endif %}
+            <tr><td class="td td_01"><label title="{{ pht_osnma_enabled_title }}">OSNMA Validation</label></td><td class="td">{% if image.osnma_enabled == "1" %} <label title="">Enabled</label> {% else %} <label title="">Disabled</label> {% endif %}</td></tr>
+            {% if image.osnma_enabled == "1" %}
+            <tr><td class="td td_01"><label title="{{ pht_validated_sats_title }}">Validated satellites</label></td><td class="td"><label title="{{ pht_validated_sats }}">{{ image.validated_sats }}</label></td></tr>
+            {% endif %}
+            <tr><td class="td td_01"></td><td class="td">{% if image.osnma_validated == "1" %} <label title="">Photo location is OSNMA validated</label> {% else %} <label title="">Photo location is not validated</label>{% endif %}</td></tr>
           </tbody>
         </table>
       </td>
